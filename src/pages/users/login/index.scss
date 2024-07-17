@@ -1,0 +1,49 @@
+.ra-login-container {
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  .form {
+    width: 400px;
+    padding: 20px 24px;
+    border: 1px solid #dadada;
+    border-radius: 4px;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    .heading {
+      text-align: center;
+      font-size: 20px;
+      text-transform: uppercase;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 12px;
+
+      .form-label {
+        font-weight: 500;
+      }
+
+      .form-input {
+        height: 36px;
+      }
+
+      .error-message {
+        color: red;
+      }
+    }
+
+    .button-login {
+      button {
+        width: 100%;
+        height: 36px;
+      }
+    }
+  }
+}
