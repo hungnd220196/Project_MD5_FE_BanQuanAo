@@ -1,12 +1,14 @@
+import HomeIndex from "../../pages";
 import About from "../../pages/users/about";
 import Contact from "../../pages/users/contact";
 import Home from "../../pages/users/home";
-import Login from "../../pages/users/login";
+import Login from "../../pages/login";
+import Register from "../../pages/register";
 
 const publicRoutes = [
   {
     path: "/",
-    element: <Home />,
+    element: <HomeIndex />,
   },
   {
     path: "/about",
@@ -19,6 +21,10 @@ const publicRoutes = [
   {
     path: "/login",
     element: <Login />,
+  },
+  {
+    path: "/register",
+    element: <Register />,
   },
 ];
 
