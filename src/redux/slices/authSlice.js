@@ -1,42 +1,40 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getDataFormCookie, login } from "../../services/authService";
+import { IDLE } from "../../constants/status";
 import Cookies from "js-cookie";
+import { loadUserFromCookie, login } from "../../services/authService";
 
 const authSlice = createSlice({
   name: "auth",
   initialState: {
-    loading: "idle",
+    loading: IDLE,
     data: null,
     error: null,
   },
   reducers: {
     logout: (state) => {
       state.data = null;
-      // Xóa cookie
       Cookies.remove("token");
-      Cookies.remove("userInfo");
     },
   },
   extraReducers: (builder) => {
-    builder.addCase(login.pending, (state) => {
-      state.loading = "pending";
-    });
-
-    builder.addCase(login.fulfilled, (state, action) => {
-      state.data = action.payload;
-      state.loading = "successed";
-    });
-
-    builder.addCase(getDataFormCookie.fulfilled, (state, action) => {
-      state.data = action.payload;
-    });
-
-    builder.addCase(login.rejected, (state, action) => {
-      state.loading = "Failed";
-      state.error = action.error;
-    });
+    builder
+      .addCase(login.pending, (state) => {
+        state.loading = "loading";
+        state.error = null;
+      })
+      .addCase(login.fulfilled, (state, action) => {
+        state.loading = "succeeded";
+        state.data = action.payload;
+      })
+      .addCase(login.rejected, (state, action) => {
+        state.loading = "failed";
+        state.error = action.error;
+      })
+      .addCase(loadUserFromCookie.fulfilled, (state, action) => {
+        state.data = action.payload;
+      });
   },
 });
 
-export const { logout } = authSlice.actions;
 export default authSlice.reducer;
+export const { logout } = authSlice.actions;
