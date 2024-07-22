@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAllProducts, changePage, deleteProduct } from "../../../redux/slices/productSice";
-import { Table, Spin, Space, Button, message, Upload, Modal, Form, Input, Switch } from "antd";
+import { fetchAllProducts, changePage, deleteProduct, searchProducts } from "../../../redux/slices/productSice";
+import { Table, Spin, Space, Button, message, Upload, Modal, Form, Input, Switch, Empty } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import PaginationComponent from "../../../components/PaginationComponents";
 
 export default function Product() {
-  const products = useSelector((state) =>  state.product.products);
+  const products = useSelector((state) => state.product.products);
   const number = useSelector((state) => state.product.number);
   const total = useSelector((state) => state.product.total);
   const size = useSelector((state) => state.product.size);
@@ -20,15 +20,24 @@ export default function Product() {
   const [file, setFile] = useState(null);
   const [form] = Form.useForm();
   const [addForm] = Form.useForm();
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleChangePage = (page, pageSize) => {
     dispatch(changePage({ page: page - 1, size: pageSize }));
-    dispatch(fetchAllProducts({ page: page - 1, size: pageSize }));
+    if (searchTerm) {
+      dispatch(searchProducts({ search: searchTerm, page: page - 1, size: pageSize }));
+    } else {
+      dispatch(fetchAllProducts({ page: page - 1, size: pageSize }));
+    }
   };
 
   useEffect(() => {
-    dispatch(fetchAllProducts({ page: number, size }));
-  }, [number, size, dispatch]);
+    if (searchTerm) {
+      dispatch(searchProducts({ search: searchTerm, page: number, size }));
+    } else {
+      dispatch(fetchAllProducts({ page: number, size }));
+    }
+  }, [number, size, searchTerm, dispatch]);
 
   const handleEdit = (record) => {
     setEditingProduct(record);
@@ -58,7 +67,7 @@ export default function Product() {
         formData.append('image', file);
       }
 
-      await axios.put(`/products/${editingProduct.productId}`, formData, {
+      await axios.put(`http://localhost:8080/api/v1/admin/products/${editingProduct.productId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -112,6 +121,12 @@ export default function Product() {
   const handleAddModalCancel = () => {
     setIsAddModalVisible(false);
     setFile(null);
+  };
+
+  const handleSearch = (e) => {
+    const value = e.target.value;
+    setSearchTerm(value);
+    dispatch(searchProducts({ search: value, page: number, size }));
   };
 
   const columns = [
@@ -169,10 +184,20 @@ export default function Product() {
         <Spin />
       ) : (
         <div className="product-table">
+          <Input
+            placeholder="Search products"
+            value={searchTerm}
+            onChange={handleSearch}
+            style={{ marginBottom: 16 }}
+          />
           <Button type="primary" onClick={() => setIsAddModalVisible(true)} style={{ marginBottom: 16 }}>
             Add New Product
           </Button>
-          <Table columns={columns} dataSource={data} pagination={false} />
+          {data.length > 0 ? (
+            <Table columns={columns} dataSource={data} pagination={false} />
+          ) : (
+            <Empty description="No products found" />
+          )}
         </div>
       )}
       <PaginationComponent
@@ -214,11 +239,10 @@ export default function Product() {
                 setFile(file);
                 return false;
               }}
-              showUploadList={false}
+              onRemove={() => setFile(null)}
             >
-              <Button icon={<UploadOutlined />}>Select Image</Button>
+              <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
-            {file && <p>{file.name}</p>}
           </Form.Item>
         </Form>
       </Modal>
@@ -229,13 +253,13 @@ export default function Product() {
         onCancel={handleAddModalCancel}
       >
         <Form form={addForm} layout="vertical">
-          {/* <Form.Item
+          <Form.Item
             name="sku"
             label="SKU"
             rules={[{ required: true, message: 'SKU is required' }]}
           >
             <Input />
-          </Form.Item> */}
+          </Form.Item>
           <Form.Item
             name="productName"
             label="Product Name"
@@ -255,11 +279,10 @@ export default function Product() {
                 setFile(file);
                 return false;
               }}
-              showUploadList={false}
+              onRemove={() => setFile(null)}
             >
-              <Button icon={<UploadOutlined />}>Select Image</Button>
+              <Button icon={<UploadOutlined />}>Upload</Button>
             </Upload>
-            {file && <p>{file.name}</p>}
           </Form.Item>
         </Form>
       </Modal>

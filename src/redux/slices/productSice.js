@@ -39,6 +39,18 @@ export const deleteProduct = createAsyncThunk(
   }
 );
 
+export const searchProducts = createAsyncThunk(
+  'product/searchProducts',
+  async ({ search, page, size }) => {
+    const response = await axios.get(`http://localhost:8080/api/v1/admin/products/search`, {
+      
+      params: { search, page, size },
+    });
+    
+    return response.data;
+  }
+);
+
 const productSlice = createSlice({
   name: "product",
   initialState,
@@ -70,6 +82,20 @@ const productSlice = createSlice({
         state.isLoading = false;
       })
       .addCase(deleteProduct.rejected, (state) => {
+        state.isLoading = false;
+      })
+
+      .addCase(searchProducts.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(searchProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.products = action.payload.data;
+        state.total = action.payload.totalElements;
+        state.number = action.payload.number;
+        state.size = action.payload.size;
+      })
+      .addCase(searchProducts.rejected, (state) => {
         state.isLoading = false;
       });
   },
