@@ -1,22 +1,22 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
-import { message, notification } from "antd";
+import { notification } from "antd";
 import axios from "axios";
 
 const initialState = {
   content: [],
   total: 0,
   number: 0,
-  size: 5,
+  size: 3,
   isLoading: false,
 };
+
 export const fetchAllCategory = createAsyncThunk(
   "category/fetchAllCategory",
-  async ({ page }) => {
+  async ({ page, size }) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/admin/categories?page=${page}`
+        `http://localhost:8080/api/v1/admin/categories?page=${page}&size=${size}`
       );
-
       return response.data;
     } catch (error) {
       notification.error({ message: error.message, duration: 3 });
@@ -24,12 +24,14 @@ export const fetchAllCategory = createAsyncThunk(
   }
 );
 
+
 const categorySlice = createSlice({
-  name: " category",
+  name: "category",
   initialState,
   reducers: {
     changePage: (state, action) => {
-      state.number = action.payload;
+      state.number = action.payload.page;  
+      state.size = action.payload.size;
     },
   },
   extraReducers: (builder) => {
@@ -39,15 +41,15 @@ const categorySlice = createSlice({
       })
       .addCase(fetchAllCategory.fulfilled, (state, action) => {
         state.isLoading = false;
-        console.log(action.payload);
         state.content = action.payload.data.content;
-        state.total = action.payload.totalElements;
+        state.total = action.payload.data.totalElements;
       })
       .addCase(fetchAllCategory.rejected, (state) => {
         state.isLoading = false;
       });
   },
 });
+
 
 export const { changePage } = categorySlice.actions;
 export default categorySlice.reducer;
