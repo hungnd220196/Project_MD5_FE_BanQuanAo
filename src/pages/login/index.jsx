@@ -42,7 +42,7 @@ export default function Login() {
       .then((response) => {
         const userData = response?.data;
         const roles = userData?.roles;
-        const token = userData?.token;
+        const token = userData?.accessToken;
 
         localStorage.setItem('user', JSON.stringify(userData));
 
