@@ -25,11 +25,9 @@ export default function Login() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    // Gọi API đăng nhập tài khoản
     dispatch(
       login({
-        email: user.email,
+        username: user.username,
         password: user.password,
       })
     )
@@ -52,6 +50,7 @@ export default function Login() {
           message: "Thất bại",
           description: "Đăng nhập thất bại.",
         });
+        
       });
   };
 
