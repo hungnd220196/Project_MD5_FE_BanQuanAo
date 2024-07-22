@@ -27,7 +27,7 @@ export default function PrivateRoute({ element }) {
     if (!isLogin) {
       navigate("/login");
     } else if (user?.roles && !user.roles.includes("ROLE_ADMIN")) {
-      navigate("/");
+      navigate("/login");
     }
   }, [isLogin, user, navigate]);
 
