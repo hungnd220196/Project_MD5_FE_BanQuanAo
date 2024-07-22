@@ -1,8 +1,9 @@
 import { Button, Input, notification } from "antd";
 import "./index.scss";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import Cookies from "js-cookie";
 import { useDispatch } from "react-redux";
-import { login } from "../../services/authService";
+import { loadUserFromCookie, login } from "../../services/authService";
 import { NavLink, useNavigate } from "react-router-dom";
 import { FacebookFilled, GoogleCircleFilled, LockOutlined, TwitterCircleFilled, UserOutlined } from "@ant-design/icons";
 
@@ -14,6 +15,12 @@ export default function Login() {
     password: "",
   });
 
+  useEffect(() => {
+    const token = Cookies.get("token");
+    if (token) {
+      dispatch(loadUserFromCookie(token));
+    }
+  }, [dispatch]);
   const handleChange = (e) => {
     const { value, name } = e.target;
 
@@ -33,10 +40,17 @@ export default function Login() {
     )
       .unwrap()
       .then((response) => {
-        const roles = response?.data?.roles;
-        if (roles.some((role) => role === "ROLE_ADMIN")) {
+        const userData = response?.data;
+        const roles = userData?.roles;
+        const token = userData?.token;
+
+        localStorage.setItem('user', JSON.stringify(userData));
+
+        Cookies.set('token', token, { path: '/' });
+
+        if (roles.includes("ROLE_ADMIN")) {
           navigate("/admin");
-        } else {
+        } else if (roles.includes("ROLE_USER")) {
           navigate("/");
         }
 
@@ -50,7 +64,6 @@ export default function Login() {
           message: "Thất bại",
           description: "Đăng nhập thất bại.",
         });
-        
       });
   };
 
@@ -96,13 +109,13 @@ export default function Login() {
         <div className="social-login-text">Or Sign Up Using</div>
         <div className="social-login">
           <button className="social-button">
-          <FacebookFilled style={{color:"blue"}}/>
+            <FacebookFilled style={{ color: "blue" }} />
           </button>
           <button className="social-button">
-          <TwitterCircleFilled style={{color:"#2DA7EE"}}/>
+            <TwitterCircleFilled style={{ color: "#2DA7EE" }} />
           </button>
           <button className="social-button">
-          <GoogleCircleFilled style={{color:"#D64F44"}} />
+            <GoogleCircleFilled style={{ color: "#D64F44" }} />
           </button>
         </div>
         <div className="sign-up">
