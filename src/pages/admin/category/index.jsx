@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategory, changePage } from "../../../redux/slices/categorySlice"; 
-import { Table, Spin, Space, Button, message, Upload, Modal, Form, Input, Switch } from "antd";
+import { Table, Spin, Space, Button, message, Upload, Modal, Form, Input, Switch, Popconfirm } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
+import Cookies from "js-cookie";
 import PaginationComponent from "../../../components/PaginationComponents";
 
 export default function Category() {
@@ -38,7 +39,11 @@ export default function Category() {
 
   const handleDelete = async (categoryId) => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/admin/categories/${categoryId}`);
+      await axios.delete(`http://localhost:8080/api/v1/admin/categories/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      });
       message.success('Category deleted successfully');
       dispatch(fetchAllCategory({ page: number, size }));
     } catch (error) {
@@ -61,13 +66,13 @@ export default function Category() {
       await axios.put(`http://localhost:8080/api/v1/admin/categories/${editingCategory.categoryId}`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
 
       message.success('Category updated successfully');
       setIsModalVisible(false);
       setFile(null);
-      
       dispatch(fetchAllCategory({ page: number, size }));
     } catch (error) {
       message.error('Failed to update category');
@@ -79,7 +84,6 @@ export default function Category() {
     setIsModalVisible(false);
     setFile(null);
   };
-
 
   const handleAddNewCategory = async () => {
     try {
@@ -95,16 +99,15 @@ export default function Category() {
       await axios.post('http://localhost:8080/api/v1/admin/categories', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${Cookies.get("token")}`,
         },
       });
 
       message.success('Category added successfully');
       setIsAddModalVisible(false);
       setFile(null);
-      
       dispatch(fetchAllCategory({ page: number, size }));
     } catch (error) {
-      message.error('Failed to add category');
       console.error('Add error:', error);
     }
   };
@@ -119,11 +122,13 @@ export default function Category() {
       title: 'ID',
       dataIndex: 'categoryId',
       key: 'id',
+      sorter: (a, b) => a.categoryId - b.categoryId
     },
     {
       title: 'Name',
       dataIndex: 'categoryName',
       key: 'name',
+      sorter: (a, b) => a.categoryName.localeCompare(b.categoryName),
     },
     {
       title: 'Description',
@@ -148,15 +153,21 @@ export default function Category() {
       render: (text, record) => (
         <Space size="middle">
           <Button type="link" onClick={() => handleEdit(record)}>Edit</Button>
-          <Button type="link" danger onClick={() => handleDelete(record.categoryId)}>Delete</Button>
-          <Button type="link" danger>Block</Button>
+          <Popconfirm
+            title="Are you sure to delete this category?"
+            onConfirm={() => handleDelete(record.categoryId)}
+            okText="Yes"
+            cancelText="No"
+          >
+            <Button type="link" danger>Delete</Button>
+          </Popconfirm>
         </Space>
       ),
     },
   ];
 
   const data = categories?.map((item) => ({
-    key: item.id,
+    key: item.categoryId,
     categoryId: item.categoryId,
     categoryName: item.categoryName,
     description: item.description,
