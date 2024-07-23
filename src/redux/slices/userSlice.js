@@ -4,6 +4,9 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { notification } from "antd";
 import axios from "axios";
 import Cookies from "js-cookie";
+import { GET, PATCH, PUT } from "../../constants/httpMethod";
+import BASE_URL from "../../api";
+import Item from "antd/es/list/Item";
 
 const initialState = {
   content: [],
@@ -12,21 +15,43 @@ const initialState = {
   number: 0,
   size: 3,
   isLoading: false,
+  roles: [],
 };
+
+export const fetchRoles = createAsyncThunk("user/fetchRoles", async () => {
+  const response = await BASE_URL[GET](`admin/roles`,
+    {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    }
+  );
+  return response.data;
+});
+
+export const updateUserRole = createAsyncThunk('user/updateUserRole', async ({ userId, role }) => {
+  const response = await BASE_URL[PUT](`admin/${userId}/role`, { role }, {
+    headers: {
+      Authorization: `Bearer ${Cookies.get("token")}`,
+    },
+  });
+  return response.data;
+});
+
+
 
 export const fetchAllUser = createAsyncThunk(
   "user/fetchAllUser",
   async ({ page, size }) => {
     try {
-      const response = await axios.get(
-        `http://localhost:8080/api/v1/admin/users?page=${page}&size=${size}`,
+      const response = await BASE_URL[GET](
+        `admin/users?page=${page}&size=${size}`,
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("token")}`,
           },
         }
       );
-      console.log(response);
       return response.data;
     } catch (error) {
       // notification.error({ message: error.message, duration: 3 });
@@ -35,26 +60,38 @@ export const fetchAllUser = createAsyncThunk(
 );
 
 export const searchUser = createAsyncThunk(
-    "user/searchUser",
-    async ({searchText}) => {
-            const response = await axios.get(
-                `http://localhost:8080/api/v1/admin/users/search?query=${searchText}`,
-                {
-                    headers: {
+  "user/searchUser",
+  async ({ searchText }) => {
+      try {
+          const response = await BASE_URL[GET](
+              `admin/users/search?query=${searchText}`,
+              {
+                  headers: {
                       Authorization: `Bearer ${Cookies.get("token")}`,
-                    },
-                  }
-            );
-            return response.data;
-    }
+                  },
+              }
+          );
+          return response.data;
+      } catch (error) {
+          throw error;
+      }
+  }
 );
 
 export const updateUserStatus = createAsyncThunk(
   "user/updateUserStatus",
-  async ({ userId, status }) => {
+  async ({ userId, status }, { getState, rejectWithValue }) => {
     try {
-      const response = await axios.put(
-        `http://localhost:8080/api/v1/admin/users/${userId}`,
+      const state = getState();
+      console.log(state);
+      const user = state.user.content.find(user => user.userId === userId);
+      if (user && user.roles.some(item => item.roleName === "ROLE_ADMIN")) {
+        notification.error({ message:"Không thể thay đổi trạng thái ADMIN", duration: 3 });
+        return rejectWithValue("Không thể thay đổi trạng thái ADMIN");
+      }
+
+      const response = await BASE_URL[PATCH](
+        `admin/users/${userId}`,
         { status },
         {
           headers: {
@@ -62,11 +99,12 @@ export const updateUserStatus = createAsyncThunk(
           },
         }
       );
-    //   notification.success({ message: "Status updated successfully", duration: 3 });
+      notification.success({ message: "Thay đổi trạng thái thành công", duration: 3 });
       return response.data;
-    } catch (error) {
-      notification.error({ message: error.message, duration: 3 });
-      throw error;
+    } catch (err) {
+      console.log(err);
+      notification.error({ message: err.message, duration: 3 });
+      return rejectWithValue(err.message);
     }
   }
 );
@@ -104,7 +142,7 @@ const userSlice = createSlice({
           state.content[index] = updatedUser;
         }
       })
-      .addCase(updateUserStatus.rejected, (state) => {
+      .addCase(updateUserStatus.rejected, (state, action) => {
         state.isLoading = false;
       })
       .addCase(searchUser.pending, (state) => {
@@ -116,6 +154,16 @@ const userSlice = createSlice({
       })
       .addCase(searchUser.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(fetchRoles.fulfilled, (state, action) => {
+        state.roles = action.payload;
+      })
+      .addCase(updateUserRole.fulfilled, (state, action) => {
+        const updatedUser = action.payload;
+        const userIndex = state.content.findIndex(user => user.userId === updatedUser.userId);
+        if (userIndex !== -1) {
+          state.content[userIndex] = updatedUser;
+        }
       });
   },
 });

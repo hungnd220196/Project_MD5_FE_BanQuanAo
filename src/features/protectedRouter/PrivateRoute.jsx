@@ -5,31 +5,30 @@ import Cookies from "js-cookie";
 export default function PrivateRoute({ element }) {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   useEffect(() => {
     const userData = localStorage.getItem('user');
-    const parsedUserData = userData ? JSON.parse(userData) : null;
-
     const token = Cookies.get('token');
 
-    if (parsedUserData && token) {
+    if (userData && token) {
+      const parsedUserData = JSON.parse(userData);
       setUser(parsedUserData);
+      setIsAuthenticated(true);
     } else {
-      setUser(null);
+      setIsAuthenticated(false);
+      navigate("/login"); 
     }
-  }, []);
-
-  const isLogin = () => {
-  return parsedUserData.roles.some(item => item === 'ROLE_ADMIN');
-  };
+  }, [navigate]);
 
   useEffect(() => {
-    if (!isLogin) {
-      navigate("/login");
-    } else if (user?.roles && !user.roles.includes("ROLE_ADMIN")) {
-      navigate("/login");
+    if (isAuthenticated) {
+      if (user && user.roles.includes("ROLE_ADMIN")) {
+      } else {
+        navigate("/login");
+      }
     }
-  }, [isLogin, user, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
-  return isLogin && user?.roles.includes("ROLE_ADMIN") ? element : null;
+  return isAuthenticated && user?.roles.includes("ROLE_ADMIN") ? element : null;
 }

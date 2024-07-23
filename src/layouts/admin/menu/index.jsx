@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Outlet } from "react-router-dom";
+import { Outlet, NavLink, useNavigate } from "react-router-dom";
 import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -10,19 +10,29 @@ import {
   BellOutlined,
   MessageOutlined,
 } from '@ant-design/icons';
-import { Avatar, Button, Dropdown, Image, Layout, Menu, Space, theme } from 'antd';
-import { NavLink } from 'react-router-dom';
+import { Avatar, Button, Dropdown, Image, Layout, Menu, Space, message, theme } from 'antd';
+import { useDispatch } from 'react-redux';
+import { logout } from '../../../redux/slices/authSlice';
 
-import LayoutIndex from '..';
+
 const { Header, Sider, Content } = Layout;
 
 export default function MenuAdmin() {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const dispatch = useDispatch(); 
+
   const {
     token: { colorBgContainer, borderRadiusLG },
   } = theme.useToken();
-  const onClick = ({ key }) => {
-    message.info(`Click on item ${key}`);
+
+  const handleMenuClick = ({ key }) => {
+    if (key === 'logout') {
+      dispatch(logout());
+      navigate("/")
+    } else {
+      message.info(`Click on item ${key}`);
+    }
   };
 
   const items = [
@@ -53,10 +63,15 @@ export default function MenuAdmin() {
     },
   ];
 
+const dropDownItem = [
+      {
+      key: 'logout',
+      label: 'Log out',
+    },
+    ];
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
-
         <div className="demo-logo-vertical" />
         <Menu
           theme="dark"
@@ -66,7 +81,6 @@ export default function MenuAdmin() {
         />
       </Sider>
       <Layout>
-        {/* <HeaderAmin/> */}
         <Header
           style={{
             padding: 0,
@@ -87,30 +101,28 @@ export default function MenuAdmin() {
               height: 64,
             }}
           />
-           <Space size={16} wrap style={{position: 'absolute', right : 50}}>
-           <BellOutlined style={{ fontSize: '25px' }} />
-           <MessageOutlined style={{ fontSize: '25px'}} />
-              <Image
-                
-                width={50}
-                style={{ borderRadius: '50%' }}
-              src="https://kynguyenlamdep.com/wp-content/uploads/2022/08/anh-cute-meo-con-nguy-hiem.jpg"/>
-                
-                {/* <Avatar size={50} src={<img src={'https://kynguyenlamdep.com/wp-content/uploads/2022/08/anh-cute-meo-con-nguy-hiem.jpg'} alt="avatar" />} /> */}
+          <Space size={16} wrap style={{position: 'absolute', right: 50}}>
+            <BellOutlined style={{ fontSize: '25px' }} />
+            <MessageOutlined style={{ fontSize: '25px'}} />
+            <Image
+              width={50}
+              style={{ borderRadius: '50%' }}
+              src="https://kynguyenlamdep.com/wp-content/uploads/2022/08/anh-cute-meo-con-nguy-hiem.jpg"
+            />
             <Dropdown
-                    menu={{
-                    items,
-                    onClick,
-                    }}
+              menu={{
+                items : dropDownItem,
+                onClick: handleMenuClick,
+              }}
             >
-                <a onClick={(e) => e.preventDefault()}>
+              <a onClick={(e) => e.preventDefault()}>
                 <Space>
-                    Hover me, Click menu item
-                    <DownOutlined />
+                  Phan Van Tu
+                  <DownOutlined />
                 </Space>
-                </a>
+              </a>
             </Dropdown>
-            </Space>
+          </Space>
         </Header>
         <Content
           style={{
@@ -120,11 +132,9 @@ export default function MenuAdmin() {
             background: colorBgContainer,
             borderRadius: borderRadiusLG,
           }}
-      
         >
           <Outlet />
         </Content>
-
       </Layout>
     </Layout>
   );
