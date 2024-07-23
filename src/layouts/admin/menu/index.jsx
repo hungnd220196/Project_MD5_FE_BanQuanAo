@@ -9,6 +9,8 @@ import {
   DownOutlined,
   BellOutlined,
   MessageOutlined,
+  FileTextOutlined,
+  ProductOutlined,
 } from '@ant-design/icons';
 import { Avatar, Button, Dropdown, Image, Layout, Menu, Space, theme } from 'antd';
 import { NavLink } from 'react-router-dom';
@@ -38,12 +40,12 @@ export default function MenuAdmin() {
     },
     {
       key: '3',
-      icon: <UserOutlined />,
+      icon: <FileTextOutlined />,
       label: <NavLink to="/admin/category">Quản lý danh mục</NavLink>,
     },
     {
       key: '4',
-      icon: <UserOutlined />,
+      icon: <ProductOutlined />,
       label: <NavLink to="/admin/product">Quản lý sản phẩm</NavLink>,
     },
     {

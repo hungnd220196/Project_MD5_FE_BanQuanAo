@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { message } from "antd";
+import Cookies from "js-cookie";
 
 const initialState = {
   products: [],
@@ -14,12 +15,17 @@ export const fetchAllProducts = createAsyncThunk(
   "product/fetchAllProducts",
   async ({ page, size }) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/v1/admin/products?page=${page}&size=${size}`);
+      const response = await axios.get(`http://localhost:8080/api/v1/admin/products?page=${page}&size=${size}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
       
       return response.data;
     } catch (error) {
-      message.error(error.message);
-      throw error;
+      console.log(error);
     }
   }
 );
@@ -28,7 +34,13 @@ export const deleteProduct = createAsyncThunk(
   "product/deleteProduct",
   async (id, { dispatch, getState }) => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/admin/products/${id}`);
+      await axios.delete(`http://localhost:8080/api/v1/admin/products/${id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
       message.success("Product deleted successfully");
       const { number, size } = getState().product;
       dispatch(fetchAllProducts({ page: number, size }));
@@ -41,13 +53,36 @@ export const deleteProduct = createAsyncThunk(
 
 export const searchProducts = createAsyncThunk(
   'product/searchProducts',
-  async ({ search, page, size }) => {
-    const response = await axios.get(`http://localhost:8080/api/v1/admin/products/search`, {
-      
-      params: { search, page, size },
-    });
-    
-    return response.data;
+  async ({ search, page, size }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/admin/products/search?search=${search}&page=${page}&size=${size}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+  
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const fetchProductsByCategory = createAsyncThunk(
+  "product/fetchProductsByCategory",
+  async ({ categoryId, page, size }, { rejectWithValue }) => {
+    try {
+      const response = await axios.get(`http://localhost:8080/api/v1/admin/products/categories/${categoryId}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+        params: { page, size },
+        
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
   }
 );
 
@@ -56,8 +91,8 @@ const productSlice = createSlice({
   initialState,
   reducers: {
     changePage: (state, action) => {
-      state.number = action.payload;
-      
+      state.number = action.payload.page;
+      state.size = action.payload.size;
     },
   },
   extraReducers: (builder) => {
@@ -66,11 +101,12 @@ const productSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(fetchAllProducts.fulfilled, (state, action) => {
+        state.isLoading = false;
         state.products = action.payload.content;
         state.total = action.payload.totalElements;
         state.number = action.payload.number;
         state.size = action.payload.size;
-        state.isLoading = false;
+        
       })
       .addCase(fetchAllProducts.rejected, (state) => {
         state.isLoading = false;
@@ -90,13 +126,25 @@ const productSlice = createSlice({
       })
       .addCase(searchProducts.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.products = action.payload.data;
+        state.products = action.payload.content;
         state.total = action.payload.totalElements;
         state.number = action.payload.number;
         state.size = action.payload.size;
       })
       .addCase(searchProducts.rejected, (state) => {
         state.isLoading = false;
+      })
+      .addCase(fetchProductsByCategory.pending, (state) => {
+        state.isLoading = true;
+      })
+      .addCase(fetchProductsByCategory.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.products = action.payload.data;
+        state.total = action.payload.data.totalElements;
+      })
+      .addCase(fetchProductsByCategory.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
       });
   },
 });

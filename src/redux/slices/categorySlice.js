@@ -2,6 +2,7 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { notification } from "antd";
 import Cookies from "js-cookie";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 const initialState = {
   content: [],
@@ -17,9 +18,11 @@ export const fetchAllCategory = createAsyncThunk(
   async ({ page, size }) => {
     try {
       const response = await axios.get(
-        `http://localhost:8080/api/v1/admin/categories?page=${page}&size=${size}`,{
-          headers:{
-            Authorization: `Bearer ${Cookies.get('token')}`
+        `http://localhost:8080/api/v1/admin/categories?page=${page}&size=${size}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`
+
           }
         }
       );
