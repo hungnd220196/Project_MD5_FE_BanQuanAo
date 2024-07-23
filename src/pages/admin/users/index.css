@@ -1,0 +1,28 @@
+ .even-row {
+    text-align: center;
+    background-color: #dcdcdc; 
+  }
+  
+
+  .odd-row {
+    text-align: center;
+    background-color: #fcffe5; 
+  } 
+
+  /* .header-row {
+  background-color: #ff1818; 
+  font-weight: bold; 
+} */
+
+  /* Thay đổi màu nền và màu chữ của tiêu đề */
+.custom-table-header .ant-table-thead > tr > th {
+    text-align: center;
+    background-color: #beeaff; /* Màu nền tiêu đề */
+    color: rgb(107, 85, 74); /* Màu chữ tiêu đề */
+    font-weight: bold;
+  }
+  
+  /* Thay đổi màu nền của hàng tiêu đề */
+  /* .custom-table-header .ant-table-thead > tr {
+    background-color: #333; 
+  } */
