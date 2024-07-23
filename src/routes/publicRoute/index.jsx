@@ -1,7 +1,7 @@
 import HomeIndex from "../../pages";
 import About from "../../pages/users/about";
 import Contact from "../../pages/users/contact";
-import Home from "../../pages/users/home";
+
 import Login from "../../pages/login";
 import Register from "../../pages/register";
 

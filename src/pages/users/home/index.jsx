@@ -26,5 +26,6 @@ export default function Home() {
       <span>Email: {dataParse.email}</span>
       <Button onClick={handleLogut}>Đăng xuất</Button>
     </div>
+
   );
 }

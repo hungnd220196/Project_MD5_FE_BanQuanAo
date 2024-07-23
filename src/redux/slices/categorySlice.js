@@ -2,7 +2,6 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { notification } from "antd";
 import Cookies from "js-cookie";
 import axios from "axios";
-import Cookies from "js-cookie";
 
 const initialState = {
   content: [],
