@@ -5,7 +5,7 @@ import Cookies from "js-cookie";
 
 export const login = createAsyncThunk("auth/login", async (user) => {
   const response = await BASE_URL[POST]("auth/login", user);
-  Cookies.set("token", JSON.stringify(response.data), { expires: 1 / 24 / 60 });
+  // Cookies.set("token", JSON.stringify(response.data), { expires: 1 / 24 / 60 });
   return response.data;
 });
 

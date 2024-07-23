@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { notification } from "antd";
+import Cookies from "js-cookie";
 import axios from "axios";
 import Cookies from "js-cookie";
 
@@ -12,6 +13,7 @@ const initialState = {
 };
 
 export const fetchAllCategory = createAsyncThunk(
+  
   "category/fetchAllCategory",
   async ({ page, size }) => {
     try {
@@ -20,6 +22,7 @@ export const fetchAllCategory = createAsyncThunk(
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("token")}`
+
           }
         }
       );

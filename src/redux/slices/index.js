@@ -1,15 +1,13 @@
 import { combineReducers } from "redux";
 import authSlice from "./authSlice";
 import categorySlice from "./categorySlice";
-
 import productSice from "./productSlice";
-
 
 const reducers = combineReducers({
   auth: authSlice,
   category: categorySlice,
-  product:productSice
-
+  product:productSice,
+  user:userSlice
 });
 
 export default reducers;
