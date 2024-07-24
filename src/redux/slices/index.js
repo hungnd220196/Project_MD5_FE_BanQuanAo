@@ -5,6 +5,7 @@ import productSice from "./productSlice";
 import userSlice from "./userSlice";
 import bannerSlice from "./bannerSlice";
 
+
 const reducers = combineReducers({
   auth: authSlice,
   category: categorySlice,

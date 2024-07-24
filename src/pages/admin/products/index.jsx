@@ -37,6 +37,7 @@ export default function Product() {
 
   const dispatch = useDispatch();
   const [editingProduct, setEditingProduct] = useState(null);
+
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isAddModalVisible, setIsAddModalVisible] = useState(false);
   const [file, setFile] = useState(null);
@@ -121,11 +122,11 @@ export default function Product() {
       formData.append("sku", values.sku);
       formData.append("productName", values.productName);
       formData.append("description", values.description);
-      formData.append("status", values.status);
+      formData.append("status", values.status ? 'active' : 'inactive');
       if (file) {
         formData.append("image", file);
       }
-
+      
       if (!editingProduct || !editingProduct.productId) {
         message.error("Product ID is required to update a product");
         return;
@@ -166,7 +167,7 @@ export default function Product() {
       formData.append("sku", values.sku);
       formData.append("productName", values.productName);
       formData.append("description", values.description);
-      formData.append("status", values.status);
+      formData.append("status", values.status ? 'active' : 'inactive');
       formData.append("categoryId", values.categoryId);
       formData.append("brandId", values.brandId);
       if (file) {
@@ -259,7 +260,7 @@ export default function Product() {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status) => (status ? "active" : "inactive"),
+      render: (status) => (status === 'active' ? "Active" : "Inactive"),
     },
     {
       title: "Action",
