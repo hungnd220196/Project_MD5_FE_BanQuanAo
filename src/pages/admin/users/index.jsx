@@ -193,7 +193,6 @@ export default function User() {
     roles: Array.isArray(item.roles) ? item.roles : [],
     isDeleted: item.isDeleted,
   }));
-  console.log("data",data);
   return (
     <>
       {isLoading ? (

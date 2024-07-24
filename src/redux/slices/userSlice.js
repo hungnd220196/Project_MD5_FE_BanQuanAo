@@ -18,10 +18,39 @@ const initialState = {
   roles: [],
 };
 
+export const updateAvatarUser = createAsyncThunk("user/updateAvatarUser", async (formData) => {
+  try {
+    const response = await BASE_URL[PATCH](`user/avatar`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+});
+
+// Update user info
+export const updateInfoUser = createAsyncThunk("user/updateInfoUser", async (formData) => {
+  try {
+    const response = await BASE_URL[PATCH](`user/account`, formData, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+});
+
 export const fetchRoles = createAsyncThunk("user/fetchRoles", async () => {
   const response = await BASE_URL[GET](`admin/roles`,
     {
       headers: {
+
         Authorization: `Bearer ${Cookies.get("token")}`,
       },
     }

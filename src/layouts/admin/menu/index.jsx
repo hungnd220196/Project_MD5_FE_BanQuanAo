@@ -21,6 +21,9 @@ const { Header, Sider, Content } = Layout;
 
 export default function MenuAdmin() {
   const [collapsed, setCollapsed] = useState(false);
+  const [userData, setUserData] = useState(() =>
+    JSON.parse(localStorage.getItem("user"))
+  );
   const navigate = useNavigate();
   const dispatch = useDispatch(); 
 
@@ -62,6 +65,12 @@ export default function MenuAdmin() {
       key: '5',
       icon: <PieChartOutlined />,
       label: <NavLink to="/admin/orders">Quản lý đơn hàng</NavLink>,
+    },
+    
+    {
+      key: '6',
+      icon: <PieChartOutlined />,
+      label: <NavLink to="/admin/banners">Quản lý banner</NavLink>,
     },
   ];
 
@@ -119,7 +128,7 @@ const dropDownItem = [
             >
               <a onClick={(e) => e.preventDefault()}>
                 <Space>
-                  Phan Van Tu
+                  {userData.fullName}
                   <DownOutlined />
                 </Space>
               </a>
