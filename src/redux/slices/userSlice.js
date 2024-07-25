@@ -4,19 +4,78 @@ import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { notification } from "antd";
 import axios from "axios";
 import Cookies from "js-cookie";
-import { GET, PATCH, PUT } from "../../constants/httpMethod";
+import { DELETE, GET, PATCH, POST, PUT } from "../../constants/httpMethod";
 import BASE_URL from "../../api";
 import Item from "antd/es/list/Item";
 
 const initialState = {
   content: [],
   searchResults: [],
+  userInfo: {},
   total: 0,
   number: 0,
   size: 3,
   isLoading: false,
+  addresses: [],
   roles: [],
+  error: null,
 };
+
+export const deleteAddress = createAsyncThunk('user/deleteAddress',
+  async (addressId, { rejectWithValue }) => {
+    try {
+      await BASE_URL[DELETE](`/user/account/addresses/${addressId}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      return addressId;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+export const addNewAddress = createAsyncThunk("user/addAddress",async (formData) => {
+  try {
+    const response = await BASE_URL[POST](`user/account/addresses`,formData,{
+      headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+     return response.data;
+  }catch (error) {
+  throw error;
+}
+});
+
+
+export const showAddress = createAsyncThunk("user/showAddress",async () => {
+  try {
+    const response = await BASE_URL[GET](`user/account/addresses`,{
+      headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+     return response.data;
+  }catch (error) {
+  throw error;
+}
+});
+
+
+export const changePassword = createAsyncThunk("user/changePassword",async (formData) => {
+  try {
+    const response = await BASE_URL[PUT](`user/account/change-password`,formData,{
+      headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+     return response.data;
+  }catch (error) {
+  throw error;
+}
+});
 
 export const updateAvatarUser = createAsyncThunk("user/updateAvatarUser", async (formData) => {
   try {
@@ -35,13 +94,16 @@ export const updateAvatarUser = createAsyncThunk("user/updateAvatarUser", async 
 // Update user info
 export const updateInfoUser = createAsyncThunk("user/updateInfoUser", async (formData) => {
   try {
+    
     const response = await BASE_URL[PATCH](`user/account`, formData, {
       headers: {
+        'Content-Type': 'multipart/form-data',
         Authorization: `Bearer ${Cookies.get("token")}`,
       },
     });
     return response.data;
   } catch (error) {
+    console.log(error);
     throw error;
   }
 });
@@ -193,7 +255,34 @@ const userSlice = createSlice({
         if (userIndex !== -1) {
           state.content[userIndex] = updatedUser;
         }
+      })
+      .addCase(changePassword.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(changePassword.rejected, (state, action) => {
+        state.error = action.error;
+      })
+      .addCase(updateInfoUser.pending, (state) => {
+        state.error = null;
+      })
+      .addCase(updateInfoUser.fulfilled, (state, action) => {
+        state.userInfo = action.payload;
+      })
+      .addCase(updateInfoUser.rejected, (state, action) => {
+        state.error = action.payload;
+      })
+      .addCase(showAddress.fulfilled, (state, action) => {
+        state.addresses = action.payload;
+      })
+      .addCase(deleteAddress.fulfilled, (state, action) => {
+        state.addresses = state.addresses.filter(
+          (address) => address.id !== action.payload
+        );
+      })
+      .addCase(deleteAddress.rejected, (state, action) => {
+        state.error = action.error;
       });
+      ;
   },
 });
 
