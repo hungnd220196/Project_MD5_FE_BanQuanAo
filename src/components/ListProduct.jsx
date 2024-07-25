@@ -73,8 +73,7 @@ export default function ProductList() {
           },
         }
       );
-      // Fetch updated cart length or trigger a state change to update cart icon
-      // You can use an event emitter or any other method to trigger header update
+    
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
