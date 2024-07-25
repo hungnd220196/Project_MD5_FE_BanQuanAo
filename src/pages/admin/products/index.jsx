@@ -122,14 +122,13 @@ export default function Product() {
       formData.append("sku", values.sku);
       formData.append("productName", values.productName);
       formData.append("description", values.description);
-      formData.append("status", values.status ? 'active' : 'inactive');
+      formData.append("status", values.status ? 'true' : 'false');
+      formData.append("categoryId", values.categoryId);
+      formData.append("brandId", values.brandId);
+      formData.append("stock", values.stock); // Added field
+      formData.append("price", values.price); // Added field
       if (file) {
         formData.append("image", file);
-      }
-      
-      if (!editingProduct || !editingProduct.productId) {
-        message.error("Product ID is required to update a product");
-        return;
       }
 
       await axios.put(
@@ -167,9 +166,11 @@ export default function Product() {
       formData.append("sku", values.sku);
       formData.append("productName", values.productName);
       formData.append("description", values.description);
-      formData.append("status", values.status ? 'active' : 'inactive');
+      formData.append("status", values.status ? 'true' : 'false');
       formData.append("categoryId", values.categoryId);
       formData.append("brandId", values.brandId);
+      formData.append("stock", values.stock);
+      formData.append("price", values.price); 
       if (file) {
         formData.append("image", file);
       }
@@ -214,6 +215,11 @@ export default function Product() {
 
   const columns = [
     {
+      title: "Id",
+      dataIndex: "productId",
+      key: "id",
+    },
+    {
       title: "SKU",
       dataIndex: "sku",
       key: "sku",
@@ -239,6 +245,16 @@ export default function Product() {
       key: "brandName",
     },
     {
+      title: "Stock",
+      dataIndex: "stock",
+      key: "stock",
+    },
+    {
+      title: "Price",
+      dataIndex: "price",
+      key: "price",
+    },
+    {
       title: "Image",
       dataIndex: "imageUrl",
       key: "imageUrl",
@@ -260,17 +276,15 @@ export default function Product() {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      render: (status) => (status === 'active' ? "Active" : "Inactive"),
+      render: (status) => (status === true ? "Active" : "Inactive"),
     },
     {
       title: "Action",
       key: "action",
       render: (text, record) => (
         <Space size="middle">
-          <Button type="link" onClick={() => handleEdit(record)}>
-            Edit
-          </Button>
-          <Button type="link" danger onClick={() => handleDelete(record.productId)}>
+          <Button onClick={() => handleEdit(record)}>Edit</Button>
+          <Button danger onClick={() => handleDelete(record.productId)}>
             Delete
           </Button>
         </Space>
@@ -278,16 +292,16 @@ export default function Product() {
     },
   ];
 
-  const data = products?.map((item) => ({
+  const data = products.map((item) => ({
+    ...item,
     key: item.productId,
-    sku: item.sku,
-    productName: item.productName,
-    description: item.description,
-    status: item.status,
-    imageUrl: item.imageUrl,
+    productId:item.id,
+    stock: item.stock,
+    price:item.price,
     categoryName: categories.find((category) => category.categoryId === item.categoryId)?.categoryName || "N/A",
     brandName: brands.find((brand) => brand.id === item.brandId)?.brandName || "N/A",
   }));
+  console.log(data);
 
   return (
     <>
@@ -321,7 +335,7 @@ export default function Product() {
           >
             Add New Product
           </Button>
-            <Table columns={columns} dataSource={data} pagination={false} />
+          <Table columns={columns} dataSource={data} pagination={false} />
         </div>
       )}
 
@@ -349,7 +363,31 @@ export default function Product() {
             <Input />
           </Form.Item>
           <Form.Item name="status" label="Status" valuePropName="checked">
-            <Switch />
+            <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
+          </Form.Item>
+          <Form.Item name="categoryId" label="Category">
+            <Select>
+              {categories.map((category) => (
+                <Option key={category.categoryId} value={category.categoryId}>
+                  {category.categoryName}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="brandId" label="Brand">
+            <Select>
+              {brands.map((brand) => (
+                <Option key={brand.id} value={brand.id}>
+                  {brand.brandName}
+                </Option>
+              ))}
+            </Select>
+          </Form.Item>
+          <Form.Item name="stock" label="Stock">
+            <Input />
+          </Form.Item>
+          <Form.Item name="price" label="Price">
+            <Input />
           </Form.Item>
           <Form.Item name="image" label="Image">
             <Upload
@@ -357,9 +395,11 @@ export default function Product() {
                 setFile(file);
                 return false;
               }}
+              showUploadList={false}
             >
               <Button icon={<UploadOutlined />}>Select Image</Button>
             </Upload>
+            {file && <p>{file.name}</p>}
           </Form.Item>
         </Form>
       </Modal>
@@ -381,7 +421,7 @@ export default function Product() {
             <Input />
           </Form.Item>
           <Form.Item name="status" label="Status" valuePropName="checked">
-            <Switch />
+            <Switch checkedChildren="Active" unCheckedChildren="Inactive" />
           </Form.Item>
           <Form.Item name="categoryId" label="Category">
             <Select>
@@ -401,15 +441,23 @@ export default function Product() {
               ))}
             </Select>
           </Form.Item>
+          <Form.Item name="stock" label="Stock">
+            <Input />
+          </Form.Item>
+          <Form.Item name="price" label="Price">
+            <Input />
+          </Form.Item>
           <Form.Item name="image" label="Image">
             <Upload
               beforeUpload={(file) => {
                 setFile(file);
                 return false;
               }}
+              showUploadList={false}
             >
               <Button icon={<UploadOutlined />}>Select Image</Button>
             </Upload>
+            {file && <p>{file.name}</p>}
           </Form.Item>
         </Form>
       </Modal>
