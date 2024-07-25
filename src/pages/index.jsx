@@ -11,9 +11,6 @@ export default function HomeIndex() {
         <NavLink to="/login">Đăng Nhập</NavLink><br /><br />
         <Link to="/register">Đăng Ký</Link><br /><br />
       </div>
-      <YourCarouselComponent />
-      <ListProduct></ListProduct>
-      
     </>
   )
 }
