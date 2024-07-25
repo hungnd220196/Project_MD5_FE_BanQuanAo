@@ -1,15 +1,15 @@
-import { DownOutlined, HeartOutlined, SearchOutlined, ShoppingCartOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons'
-import { Button, Dropdown, Form, Image, Input, Menu, Modal, Space, Table, Upload } from 'antd'
+import { DeleteOutlined, DownOutlined, EyeInvisibleOutlined, EyeOutlined, HeartOutlined, SearchOutlined, ShoppingCartOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons'
+import { Button, Dropdown, Form, Image, Input, Menu, message, Modal, Space, Table, Upload } from 'antd'
 import { Header } from 'antd/es/layout/layout'
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
+import React, { useEffect, useState } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { logout } from '../../redux/slices/authSlice'
 import Cookies from "js-cookie";
 import './index.css';
 import { PATCH } from '../../constants/httpMethod'
 import BASE_URL from '../../api'
-import { updateAvatarUser, updateInfoUser } from '../../redux/slices/userSlice'
+import { addNewAddress, changePassword, deleteAddress, showAddress, updateAvatarUser, updateInfoUser } from '../../redux/slices/userSlice'
 
 export default function HeaderHomePage() {
 
@@ -18,24 +18,84 @@ export default function HeaderHomePage() {
     JSON.parse(localStorage.getItem("user"))
   );
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [changePasswordModal, setchangePasswordModal] = useState(false);
+  const [addAddressModal, setAddAddressModal] = useState(false);
   const [file, setFile] = useState(null);
+  const [newdata, setNewData] = useState('');
   const [editingKey, setEditingKey] = useState('');
   const [editingValue, setEditingValue] = useState('');
+  const [showOldPassword, setShowOldPassword] = useState(false);
+  const [showNewPassword, setShowNewPassword] = useState(false);
+  const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
+  const { addresses } = useSelector((state) => state.user);
   const [form] = Form.useForm();
   const [formAdd] = Form.useForm();
+  const [formChangePassword] = Form.useForm();
+  const [formAddAddress] = Form.useForm();
   const dispatch = useDispatch();
+
+  const [reload, setReload] = useState(false)
+
+  useEffect(() => {
+    dispatch(showAddress());
+  }, [dispatch]);
+
+  
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"))
+    if (user) {
+
+       const data =  [
+    { key: '1', label: 'Tên đăng nhập', value: user.username },
+    { key: '2', label: 'Email',data : "email", value: user.email },
+    { key: '3', label: 'Họ và tên ',data : "fullName", value: user.fullName },
+    { key: '4', label: 'Trạng thái', value: user.status ? 'Đang hoạt động' : 'Block' },
+    { key: '5', label: 'Avatar', value: file ? (
+        <>
+          <img src={URL.createObjectURL(file)} alt="users" style={{ width: 60, height: 60 }} />
+        </>
+      ) : (
+        <img src={user.avatar} alt="user" style={{ width: 60, height: 60 }} />
+      )},
+    { key: '6', label: 'Số điện thoại',data: "phone", value: user.phone },
+    { key: '7', label: 'Địa chỉ', data: 'address', value: addresses.length > 0 ? (
+      addresses.map((addr, index) => (
+        <div key={addr.addressId || index} style={{ display: 'flex', alignItems: 'center' }}>
+        <div>
+        {'Đc '} {index + 1}  {' : '+ addr.streetAddress + ', ' + addr.ward + ', ' + addr.district + ', ' + addr.province}
+        </div>
+        <DeleteOutlined
+          onClick={() => handleDeleteAddress(addr.addressId)}
+          style={{ marginLeft: 10, cursor: 'pointer', color: 'red' }}
+        />
+      </div>
+      ))
+    ) : (
+      <p>Không có địa chỉ</p>
+    ) },
+    { key: '8', label: 'Ngày tạo', value: user.createdAt },
+    { key: '9', label: 'Ngày cập nhật', value: user.updatedAt },
+  ];
+      setNewData(data);
+    }
+  }, [userData,reload ,addresses, file]);
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
-    // setSelectedUser(null);
+    setchangePasswordModal(false)
+    setAddAddressModal(false)
   };
   
   const edit = (record) => {
     formAdd.setFieldsValue({ value: record.value });
     setEditingKey(record.data);
     setEditingValue(record.value);
-    console.log(record);
 };
+
+const addAddress = (record) => {
+  setAddAddressModal(true)
+  formAddAddress.setFieldsValue({ value: record.value });
+}
 
   
 const updateAvatar = async () => {
@@ -50,32 +110,83 @@ const updateAvatar = async () => {
     const response = await dispatch(updateAvatarUser(formData)).unwrap();
     
     const newAvatarUrl = response.avatar;
-      console.log(response);
     setUserData(prevData => ({ ...prevData, avatar: newAvatarUrl }));
-    localStorage.setItem('user', JSON.stringify({ ...userData, avatar: newAvatarUrl }));
+    localStorage.setItem('user', JSON.stringify({ ...userData, avatar : newAvatarUrl }));
     
     setFile(null);
     form.resetFields();
     setIsModalVisible(false);
+    message.success('Cập nhật Avatar thành công');
   } catch (error) {
+    message.error('Có lỗi xảy ra khi cập nhật avatar');
     console.error('Lỗi khi cập nhật avatar:', error);
-  }
+  }f
 };
 
   const updateIUser = async () => {
     try {
         const newData = { ...userData, [editingKey]: editingValue };
         const formData = new FormData();
-        Object.keys(newData).forEach(key => formData.append(key, newData[key]));
+        formData.append("email",newData.email);
+        formData.append("fullName",newData.fullName);
+        formData.append("phone",newData.phone);
+        formData.append("address",newData.address);
         await dispatch(updateInfoUser(formData)).unwrap();
-            setUserData(newData);
-            localStorage.setItem('user', JSON.stringify(newData));
-            setEditingKey('');
+        localStorage.setItem('user', JSON.stringify(newData));
+        setUserData(newData);
+            formAdd.resetFields();
             setFile(null);
-            // message.success('Thông tin đã được cập nhật');
+            setReload(!reload)
+            message.success('Thông tin đã được cập nhật');
     } catch (error) {
-        // message.error('Có lỗi xảy ra khi cập nhật thông tin');
+        message.error('Có lỗi xảy ra khi cập nhật thông tin');
     }
+};
+
+const changePasswordUser = async (values) => {
+  try {
+    const formData = new FormData();
+    formData.append('oldPass', values.oldPass);
+    formData.append('newPass', values.newPass);
+    formData.append('confirmNewPass', values.confirmNewPass);
+
+    await dispatch(changePassword(formData)).unwrap();
+    formChangePassword.resetFields();
+    setchangePasswordModal(false);
+    message.success('Mật khẩu đã được thay đổi');
+    navigate("/login")
+  } catch (error) {
+    message.error('Có lỗi xảy ra khi thay đổi mật khẩu');
+  }
+};
+const addAddressUser = async (values) => {
+  try {
+    const formData = new FormData();
+    formData.append('district', values.district);
+    formData.append('phone', values.phone);
+    formData.append('province', values.province);
+    formData.append('receiveName', values.receiveName);
+    formData.append('streetAddress', values.streetAddress);
+    formData.append('ward', values.ward);
+    await dispatch(addNewAddress(formData)).unwrap();
+    dispatch(showAddress());
+    setAddAddressModal(false);
+    setIsModalVisible(true);
+    message.success('Thêm mới địa chỉ thành công');
+  } catch (error) {
+    message.error('Có lỗi xảy ra khi thêm mới địa chỉ');
+  }
+};
+
+const handleDeleteAddress = async (addressId) => {
+  try {
+    await dispatch(deleteAddress(addressId));
+      dispatch(showAddress());
+    message.success('Xóa địa chỉ thành công');
+  } catch (error) {
+    message.error('Có lỗi xảy ra khi xóa địa chỉ');
+  }
+  
 };
 
 const handleMenuClick = ({ key }) => {
@@ -84,7 +195,7 @@ const handleMenuClick = ({ key }) => {
         setIsModalVisible(true);
         break;
       case '2':
-        message.info('Click on Đổi mật khẩu');
+        setchangePasswordModal(true)
         break;
       case '3':
         dispatch(logout());
@@ -150,36 +261,41 @@ const handleMenuClick = ({ key }) => {
                   )}
                 </>
               );
-            } else if (!['1', '4', '8', '9'].includes(record.key)) {
+            
+            }else if(record.key === '7'){
+              return <Button  onClick={() => addAddress(record)} 
+              type="primary" 
+              style={{ marginLeft: 8,backgroundColor: "lightgreen" }} >Thêm</Button>;
+
+            }else if (!['1', '4', '8', '9'].includes(record.key)) {
               return <Button  onClick={() => edit(record)} 
               type="primary" 
               style={{ marginLeft: 8,backgroundColor: "lightgreen" }} >Sửa</Button>;
             }
+             
             return null;
           },
       }
   ];
 
-  const data = userData ? [
-    { key: '1', label: 'Tên đăng nhập :', value: userData.username },
-    { key: '2', label: 'Email :',data : "email", value: userData.email },
-    { key: '3', label: 'Họ và tên :',data : "fullName", value: userData.fullName },
-    { key: '4', label: 'Trạng thái :', value: userData.status ? 'Đang hoạt động' : 'Block' },
-    { key: '5', label: 'Avatar :', value: file ? (
-        <>
-          <img src={URL.createObjectURL(file)} alt="user" style={{ width: 60, height: 60 }} />
-        </>
-      ) : (
-        <img src={userData.avatar} alt="user" style={{ width: 60, height: 60 }} />
-      )},
-    { key: '6', label: 'Số điện thoại :',data: "phone", value: userData.phone },
-    { key: '7', label: 'Địa chỉ :',data :"address", value: userData.address },
-    { key: '8', label: 'Ngày tạo :', value: userData.createdAt },
-    { key: '9', label: 'Ngày cập nhật :', value: userData.updatedAt },
-  ] : [];
+  // const data = userData ? [
+  //   { key: '1', label: 'Tên đăng nhập :', value: userData.username },
+  //   { key: '2', label: 'Email :',data : "email", value: userData.email },
+  //   { key: '3', label: 'Họ và tên :',data : "fullName", value: userData.fullName },
+  //   { key: '4', label: 'Trạng thái :', value: userData.status ? 'Đang hoạt động' : 'Block' },
+  //   { key: '5', label: 'Avatar :', value: file ? (
+  //       <>
+  //         <img src={URL.createObjectURL(file)} alt="user" style={{ width: 60, height: 60 }} />
+  //       </>
+  //     ) : (
+  //       <img src={userData.avatar} alt="user" style={{ width: 60, height: 60 }} />
+  //     )},
+  //   { key: '6', label: 'Số điện thoại :',data: "phone", value: userData.phone },
+  //   { key: '7', label: 'Địa chỉ :',data :"address", value: userData.address },
+  //   { key: '8', label: 'Ngày tạo :', value: userData.createdAt },
+  //   { key: '9', label: 'Ngày cập nhật :', value: userData.updatedAt },
+  // ] : [];
   
-  
-
 
   return (
     <>
@@ -194,13 +310,12 @@ const handleMenuClick = ({ key }) => {
             <Menu.Item key="5">Giá Tốt</Menu.Item>
           </Menu>
           {Cookies.get("token") ? (<>
-          
+            
             <div className="header-icons">
                 <div className="search-container">
                     <SearchOutlined className="search-icon" />
                     <input type="text" placeholder="Tìm kiếm" className="search-input" />
                 </div>
-                    {/* <NavLink to="/login"><UserOutlined className="header-icon" /></NavLink> */}
                     <HeartOutlined className="header-icon"/>
                     <ShoppingCartOutlined className="header-icon" />
                 <div>
@@ -262,13 +377,135 @@ const handleMenuClick = ({ key }) => {
             </Form.Item>
           </Form>
         )}
-        {userData && (
+        {newdata && (
 
-             <Table columns={columns} dataSource={data} pagination={false} />
+             <Table columns={columns} dataSource={newdata} pagination={false} />
         )}
          
       </Modal>
       
+      <Modal title="Đổi mật khẩu" visible={changePasswordModal} onCancel={handleModalCancel} footer={null}>
+        <Form form={formChangePassword} layout="inline" onFinish={changePasswordUser}>
+          <Form.Item
+            name="oldPass"
+            label="Nhập mật khẩu cũ"
+            rules={[{ required: true, message: 'Nhập mật khẩu cũ' }]}
+          >
+            <Input
+              type={showOldPassword ? 'text' : 'password'}
+              suffix={
+                showOldPassword ? (
+                  <EyeInvisibleOutlined onClick={() => setShowOldPassword(!showOldPassword)} />
+                ) : (
+                  <EyeOutlined onClick={() => setShowOldPassword(!showOldPassword)} />
+                )
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name="newPass"
+            label="Nhập mật khẩu mới"
+            rules={[{ required: true, message: 'Nhập mật khẩu mới' }]}
+          >
+            <Input
+              type={showNewPassword ? 'text' : 'password'}
+              suffix={
+                showNewPassword ? (
+                  <EyeInvisibleOutlined onClick={() => setShowNewPassword(!showNewPassword)} />
+                ) : (
+                  <EyeOutlined onClick={() => setShowNewPassword(!showNewPassword)} />
+                )
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name="confirmNewPass"
+            label="Nhập lại mật khẩu"
+            rules={[{ required: true, message: 'Nhập lại mật khẩu' }]}
+          >
+            <Input
+              type={showConfirmNewPassword ? 'text' : 'password'}
+              suffix={
+                showConfirmNewPassword ? (
+                  <EyeInvisibleOutlined onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)} />
+                ) : (
+                  <EyeOutlined onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)} />
+                )
+              }
+            />
+          </Form.Item>
+          <Form.Item>
+            <Button type="primary" htmlType="submit">
+              Lưu
+            </Button>
+          </Form.Item>
+        </Form>
+      </Modal>
+
+      <Modal 
+      title="Thêm địa chỉ"
+        visible={addAddressModal}
+        onCancel={handleModalCancel}
+        onOk={() => formAddAddress.submit()}
+        okText="Thêm"
+        cancelText="Đóng">
+        <Form form={formAddAddress} layout="inline" onFinish={addAddressUser}>
+          <Form.Item
+            name="streetAddress"
+            label="Nhập số nhà / Số đường"
+          >
+            <Input
+              type='text'
+
+            />
+          </Form.Item>
+          <Form.Item
+            name="ward"
+            label="Nhập xã/phường"
+          >
+            <Input
+              type='text'
+
+            />
+          </Form.Item>
+          <Form.Item
+            name="district"
+            label="Nhập Quận/Huyện"
+          >
+            <Input
+              type='text'
+
+            />
+          </Form.Item>
+          <Form.Item
+            name="province"
+            label="Nhập Tỉnh/Thành phố"
+          >
+            <Input
+              type='text'
+
+            />
+          </Form.Item> 
+          <Form.Item
+            name="receiveName"
+            label="Nhập tên người nhận"
+          >
+            <Input
+              type='text'
+
+            />
+          </Form.Item> 
+          <Form.Item
+            name="phone"
+            label="Nhập số điện thoại "
+          >
+            <Input
+              type='text'
+
+            />
+          </Form.Item> 
+        </Form>
+      </Modal>
     </>
   )
 }

@@ -2,6 +2,7 @@ import PrivateRoute from "../../features/protectedRouter/PrivateRoute";
 import LayoutIndex from "../../layouts/admin";
 import BannerAdmin from "../../pages/admin/banner";
 import Category from "../../pages/admin/category";
+import Coupons from "../../pages/admin/coupons";
 import DashBoard from "../../pages/admin/dashboard";
 import Orders from "../../pages/admin/orders";
 import Product from "../../pages/admin/products";
@@ -36,6 +37,10 @@ const privateRoutes = [
       {
         path: "banners",
         element: <BannerAdmin/>,
+      },
+      {
+        path: "coupons",
+        element: <Coupons/>,
       },
     ],
   },
