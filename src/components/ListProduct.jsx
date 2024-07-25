@@ -1,9 +1,11 @@
+// ProductList.js
+
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Card, Spin, Pagination, Select } from 'antd';
+import { Button, Card, Spin, Pagination } from 'antd';
 import { ShoppingCartOutlined } from '@ant-design/icons';
-
-const { Option } = Select;
+import { handleFormatMoney } from '../utils/formatData';
+import Cookies from "js-cookie";
 
 export default function ProductList() {
   const [products, setProducts] = useState([]);
@@ -12,13 +14,12 @@ export default function ProductList() {
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
-  const pageSize = 5; // Số lượng sản phẩm trên mỗi trang
+  const pageSize = 5;
 
   useEffect(() => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('http://localhost:8080/api/v1/user/categories');
-        console.log(response);
         setCategories(response.data.data.content);
       } catch (error) {
         console.error('Error fetching categories:', error);
@@ -30,7 +31,6 @@ export default function ProductList() {
 
   useEffect(() => {
     const fetchProducts = async (page, categoryId) => {
-      console.log(categoryId);
       setLoading(true);
       try {
         const url = categoryId
@@ -42,12 +42,11 @@ export default function ProductList() {
             size: pageSize,
           },
         });
-        console.log(response);
-        setProducts(categoryId? response.data.data : response.data.content); // Ensure products is always an array
-        setTotalProducts(response.data.totalElements || 0); // Handle totalElements
+        setProducts(categoryId ? response.data.data : response.data.content);
+        setTotalProducts(response.data.totalElements || 0);
       } catch (error) {
         console.error('Error fetching products:', error);
-        setProducts([]); // Set to empty array on error
+        setProducts([]);
       } finally {
         setLoading(false);
       }
@@ -60,9 +59,25 @@ export default function ProductList() {
     setCurrentPage(page);
   };
 
-  const handleCategoryChange = (value) => {
-    setSelectedCategory(value);
-    setCurrentPage(1); // Reset to first page when category changes
+  const handleCategoryChange = (categoryId) => {
+    setSelectedCategory(categoryId);
+    setCurrentPage(1);
+  };
+
+  const addToCart = async (product) => {
+    try {
+      await axios.post('http://localhost:8080/api/v1/user/cart/add', { productId: product.id },
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        }
+      );
+      // Fetch updated cart length or trigger a state change to update cart icon
+      // You can use an event emitter or any other method to trigger header update
+    } catch (error) {
+      console.error('Error adding to cart:', error);
+    }
   };
 
   if (loading) {
@@ -80,18 +95,16 @@ export default function ProductList() {
       </h3>
 
       <div className="flex justify-center mb-4">
-        <Select
-          placeholder="Chọn danh mục"
-          onChange={handleCategoryChange}
-          style={{ width: 200 }}
-          allowClear
-        >
-          {categories.map((category) => (
-            <Option key={category.categoryId} value={category.categoryId}>
-              {category.categoryName}
-            </Option>
-          ))}
-        </Select>
+        {categories.map((category) => (
+          <Button
+            key={category.categoryId}
+            type={selectedCategory === category.categoryId ? 'primary' : 'default'}
+            onClick={() => handleCategoryChange(category.categoryId)}
+            className="mx-2"
+          >
+            {category.categoryName}
+          </Button>
+        ))}
       </div>
 
       <div className="grid grid-cols-5 gap-4">
@@ -114,7 +127,8 @@ export default function ProductList() {
           >
             <div className="text-center flex flex-col gap-2">
               <h3 className="font-semibold">{product.productName}</h3>
-              <Button type="primary">
+              <p className="text-lg font-medium">{(product.price)}</p>
+              <Button type="primary" onClick={() => addToCart(product)}>
                 <ShoppingCartOutlined />
                 Thêm vào giỏ hàng
               </Button>
