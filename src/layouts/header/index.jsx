@@ -1,18 +1,10 @@
-// import { DeleteOutlined, DownOutlined, EyeInvisibleOutlined, EyeOutlined, HeartOutlined, SearchOutlined, ShoppingCartOutlined, UploadOutlined, UserOutlined } from '@ant-design/icons'
-// import { Button, Dropdown, Form, Image, Input, Menu, message, Modal, Space, Table, Upload } from 'antd'
-// import { Header } from 'antd/es/layout/layout'
-// import React, { useEffect, useState } from 'react'
-// import { useDispatch, useSelector } from 'react-redux'
-// import { NavLink, useNavigate } from 'react-router-dom'
-// import { logout } from '../../redux/slices/authSlice'
-// import Cookies from "js-cookie";
-// import './index.css';
-// import { PATCH } from '../../constants/httpMethod'
-// import BASE_URL from '../../api'
-// import { addNewAddress, changePassword, deleteAddress, showAddress, updateAvatarUser, updateInfoUser } from '../../redux/slices/userSlice'
+
+import { logout } from '../../redux/slices/authSlice'
+import './index.css';
+import { addNewAddress, changePassword, deleteAddress, showAddress, updateAvatarUser, updateInfoUser } from '../../redux/slices/userSlice'
 
 import React, { useState, useEffect } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { NavLink, useNavigate } from "react-router-dom";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -42,6 +34,8 @@ import {
   MinusSquareOutlined,
   PlusSquareOutlined,
   DeleteOutlined,
+  EyeInvisibleOutlined,
+  EyeOutlined,
 } from "@ant-design/icons";
 import { Header } from "antd/es/layout/layout";
 
