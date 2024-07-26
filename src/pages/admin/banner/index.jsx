@@ -1,4 +1,4 @@
-import { Button, Form, Input, Modal, Space, Spin, Table, Upload } from 'antd';
+import { Button, Form, Input, message, Modal, Space, Spin, Table, Upload } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { addBanners, deleteBanners, fetchAllBanners } from '../../../redux/slices/bannerSlice';
@@ -8,8 +8,6 @@ import { UploadOutlined } from '@ant-design/icons';
 export default function BannerAdmin() {
   const dispatch = useDispatch();
   const banners = useSelector(state => state.banners.banners || []);
-
-
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -49,10 +47,10 @@ export default function BannerAdmin() {
       setFile(null);
       setIsModalVisible(false);
       
-    //   message.success('Thêm banner thành công!');
+      message.success('Thêm banner thành công!');
     } catch (error) {
-    //   console.error('Lỗi khi thêm banner:', error);
-    //   message.error('Thêm banner thất bại!');
+      console.error('Lỗi khi thêm banner:', error);
+      message.error('Thêm banner thất bại!');
     }
   };
 

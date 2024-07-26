@@ -92,7 +92,8 @@ export default function Login() {
   };
 
   return (
-    <div className="container">
+    <>
+    <div className="container-login">
       <div className="form-wrapper">
         <h2 className="title">Đăng nhập</h2>
         <form className="form" onSubmit={handleSubmit}>
@@ -149,5 +150,6 @@ export default function Login() {
         </div>
       </div>
     </div>
+    </>
   );
 }
