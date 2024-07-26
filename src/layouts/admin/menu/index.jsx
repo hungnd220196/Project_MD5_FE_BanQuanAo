@@ -72,6 +72,12 @@ export default function MenuAdmin() {
       icon: <PieChartOutlined />,
       label: <NavLink to="/admin/banners">Quản lý banner</NavLink>,
     },
+
+    {
+      key: '7',
+      icon: <PieChartOutlined />,
+      label: <NavLink to="/admin/coupons">Quản lý mã giảm giá</NavLink>,
+    },
   ];
 
 const dropDownItem = [
@@ -118,7 +124,7 @@ const dropDownItem = [
             <Image
               width={50}
               style={{ borderRadius: '50%' }}
-              src="https://kynguyenlamdep.com/wp-content/uploads/2022/08/anh-cute-meo-con-nguy-hiem.jpg"
+              src={userData.avatar}
             />
             <Dropdown
               menu={{
