@@ -1,0 +1,19 @@
+.ant-layout-content {
+    background: #fff;
+    padding: 24px;
+  }
+  
+  img {
+    width: 100%;
+    border-radius: 8px;
+    margin-bottom: 16px;
+  }
+  
+  button {
+    border-radius: 4px;
+    margin: 4px;
+  }
+  
+  button[disabled] {
+    cursor: not-allowed;
+  }

@@ -42,7 +42,7 @@ export default function BannerAdmin() {
         formData.append('image', file);
       }
 
-      dispatch(addBanners(formData)).then(() => {dispatch(fetchAllBanners());setIsModalVisible(false);}).catch(err);
+      dispatch(addBanners(formData)).then(() => {dispatch(fetchAllBanners());setIsModalVisible(false);}).catch();
       addForm.resetFields();
       setFile(null);
       setIsModalVisible(false);
@@ -50,7 +50,7 @@ export default function BannerAdmin() {
       message.success('Thêm banner thành công!');
     } catch (error) {
       console.error('Lỗi khi thêm banner:', error);
-      message.error('Thêm banner thất bại!');
+
     }
   };
 
