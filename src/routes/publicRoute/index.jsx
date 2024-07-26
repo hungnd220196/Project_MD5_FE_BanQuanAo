@@ -5,6 +5,7 @@ import Contact from "../../pages/users/contact";
 import Login from "../../pages/login";
 import Register from "../../pages/register";
 import HomeIndex from "../../pages/homePage";
+import ProductDetail from "../../pages/productDetail";
 
 const publicRoutes = [
   {
@@ -26,6 +27,10 @@ const publicRoutes = [
   {
     path: "/register",
     element: <Register />,
+  },
+  {
+    path: "/productDetail/:id",
+    element: <ProductDetail />,
   },
 ];
 

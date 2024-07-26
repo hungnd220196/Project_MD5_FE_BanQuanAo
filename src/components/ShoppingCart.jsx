@@ -1,36 +1,23 @@
 import { DeleteOutlined, MinusSquareOutlined, PlusSquareOutlined } from '@ant-design/icons';
-import { Divider, Drawer } from 'antd'
+import { Divider, Drawer, message } from 'antd'
 import axios from 'axios';
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from 'react'
+import { fetchCart } from '../redux/slices/shoppingCartSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 
 export default function ShoppingCart({onClose,open}) {
+  const dispatch = useDispatch();
      // Thêm trạng thái cho giỏ hàng
   const [cart, setCart] = useState([]);
   const [cartLength, setCartLength] = useState(0);
+  const { data } = useSelector((state) => {return state.shoppingCarts.shoppingCarts});
 
   useEffect(() => {
-    fetchCart();
-  }, []);
+      dispatch(fetchCart());
+  }, [dispatch]);
 
-  const fetchCart = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:8080/api/v1/user/cart/list",
-        {
-          headers: {
-            Authorization: `Bearer ${Cookies.get("token")}`,
-          },
-        }
-      );
-      console.log(response.data);
-      setCart(response.data.data); // Assuming response.data.data contains the cart array
-      setCartLength(response.data.data.length);
-    } catch (error) {
-      console.error("Error fetching cart:", error);
-    }
-  };
 
   const handleRemoveItem = async (cartItemId) => {
     try {
@@ -43,7 +30,7 @@ export default function ShoppingCart({onClose,open}) {
         }
       );
       message.success("Sản phẩm đã được xóa khỏi giỏ hàng");
-      fetchCart();
+      dispatch(fetchCart());
     } catch (error) {
       console.error("Error removing item from cart:", error);
       message.error("Có lỗi xảy ra khi xóa sản phẩm");
@@ -79,8 +66,9 @@ export default function ShoppingCart({onClose,open}) {
           onChange={onChange}
         > */}
 
-        {cart.map((cart, index) => (
+        {data && data.map((cart, index) => (
           <>
+          {/* {console.log(c)} */}
             <div key={cart.productId} className="flex items-center gap-2">
               <img
                 style={{
@@ -101,11 +89,11 @@ export default function ShoppingCart({onClose,open}) {
               />
               <p>{cart.productPrice * cart.orderQuantity}</p>
               <DeleteOutlined
-                onClick={() => handleRemoveItem(cart.productId)}
+                onClick={() => handleRemoveItem(cart.id)}
               />
             </div>
           </>
-        ))}
+        ))};
         {/* </Checkbox.Group> */}
         <>
           <div className="flex items-center justify-between">
