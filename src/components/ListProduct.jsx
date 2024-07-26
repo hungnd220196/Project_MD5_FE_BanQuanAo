@@ -1,8 +1,6 @@
-// ProductList.js
-
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Card, Spin, Pagination } from 'antd';
+import { Button, Card, Spin, Pagination, Input } from 'antd';
 import { ShoppingCartOutlined } from '@ant-design/icons';
 import { handleFormatMoney } from '../utils/formatData';
 import Cookies from "js-cookie";
@@ -10,7 +8,9 @@ import { useNavigate } from 'react-router-dom';
 import { fetchCart } from '../redux/slices/shoppingCartSlice';
 import { useDispatch } from 'react-redux';
 
-export default function ProductList() {
+
+export default function ProductList({ searchKeyword }) {
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -39,19 +39,27 @@ export default function ProductList() {
   }, []);
 
   useEffect(() => {
-    const fetchProducts = async (page, categoryId) => {
+    const fetchProducts = async (page, categoryId, keyword) => {
       setLoading(true);
       try {
-        const url = categoryId
-          ? `http://localhost:8080/api/v1/user/products/categories/${categoryId}`
-          : 'http://localhost:8080/api/v1/user/products';
-        const response = await axios.get(url, {
-          params: {
-            page: page - 1,
-            size: pageSize,
-          },
-        });
-        setProducts(categoryId ? response.data.data : response.data.content);
+        let url;
+        const params = {
+          page: page - 1,
+          size: pageSize,
+        };
+        
+        if (keyword) {
+          url = 'http://localhost:8080/api/v1/user/products/search';
+          params.search = keyword;
+        } else {
+          url = categoryId
+            ? `http://localhost:8080/api/v1/user/products/categories/${categoryId}`
+            : 'http://localhost:8080/api/v1/user/products';
+        }
+
+        const response = await axios.get(url, { params });
+        console.log(response);
+        setProducts(categoryId? response.data.data: response.data.content || []);
         setTotalProducts(response.data.totalElements || 0);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -61,8 +69,8 @@ export default function ProductList() {
       }
     };
 
-    fetchProducts(currentPage, selectedCategory);
-  }, [currentPage, selectedCategory]);
+    fetchProducts(currentPage, selectedCategory, searchKeyword);
+  }, [currentPage, selectedCategory, searchKeyword]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -109,7 +117,7 @@ export default function ProductList() {
       <h3 className="text-center uppercase font-semibold py-6">
         Danh sách sản phẩm
       </h3>
-
+     
       <div className="flex justify-center mb-4">
         {categories.map((category) => (
           <Button
@@ -124,7 +132,7 @@ export default function ProductList() {
       </div>
 
       <div className="grid grid-cols-5 gap-4">
-        {products.map((product) => (
+        {Array.isArray(products) && products.map((product) => (
           <Card
             key={product.id}
             hoverable
@@ -145,8 +153,10 @@ export default function ProductList() {
             }
           >
             <div className="text-center flex flex-col gap-2">
+
               <h3 onClick={() => {handleCardClick(product.id)}} className="font-semibold">{product.productName}</h3>
               <p onClick={() => {handleCardClick(product.id)}} className="text-lg font-medium">{(product.price)}</p>
+
               <Button type="primary" onClick={() => addToCart(product)}>
                 <ShoppingCartOutlined />
                 Thêm vào giỏ hàng

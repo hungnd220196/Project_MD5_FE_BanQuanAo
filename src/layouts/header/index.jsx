@@ -41,7 +41,10 @@ import { Header } from "antd/es/layout/layout";
 import ShoppingCart from '../../components/ShoppingCart';
 import WishList from '../../components/WishList';
 
-export default function HeaderHomePage() {
+export default function HeaderHomePage({ setSearchKeyword }) {
+  const handleSearchChange = (e) => {
+    setSearchKeyword(e.target.value);
+  };
 
 //Header Scoll
 
@@ -62,10 +65,7 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
-
-
   //
-
   const navigate = useNavigate();
   const [userData, setUserData] = useState(() =>
     JSON.parse(localStorage.getItem("user"))
@@ -177,6 +177,40 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
     setOpenWishList(true);
   };
 
+  const handleRemoveItem = async (cartItemId) => {
+    try {
+      await axios.delete(
+        `http://localhost:8080/api/v1/user/cart/items/${cartItemId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
+      message.success("Sản phẩm đã được xóa khỏi giỏ hàng");
+      fetchCart();
+    } catch (error) {
+      console.error("Error removing item from cart:", error);
+      message.error("Có lỗi xảy ra khi xóa sản phẩm");
+    }
+  };
+
+  const handleClearCart = async () => {
+    try {
+      await axios.delete(`http://localhost:8080/api/v1/user/cart/clear`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      message.success("Tất cả sản phẩm đã được xóa khỏi giỏ hàng");
+      setCart([]); // Clear the cart in the state
+      setCartLength(0); // Update the cart length
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      message.error("Có lỗi xảy ra khi xóa tất cả sản phẩm");
+    }
+  };
+
   const onCloseWishList = () => {
     setOpenWishList(false);
   };
@@ -184,6 +218,7 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
   //Shopingcart
 
   const [open, setOpen] = useState(false);
+
 
   const showDrawer = () => {
     setOpen(true);
@@ -492,6 +527,7 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
                     type="text"
                     placeholder="Tìm kiếm"
                     className="search-input"
+                    onChange={handleSearchChange}
                   />
                 </div>
 
@@ -578,7 +614,6 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
           <Table columns={columns} dataSource={newdata} pagination={false} />
         )}
       </Modal>
-
       <Modal
         title="Đổi mật khẩu"
         visible={changePasswordModal}
@@ -700,6 +735,7 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
       <div className="header-content">
         <div className="logo" style={{marginLeft : "45%"}}>ROUTINE</div>
         {Cookies.get("token") ? (
+        
           <>
             <div className="header-icons">
               <div className="search-container">
@@ -910,5 +946,6 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
     <ShoppingCart onClose={onClose} open={open}/>
     <WishList onCloseWishList={onCloseWishList} openWishList={openWishList}/>
   </>
+
   );
 }
