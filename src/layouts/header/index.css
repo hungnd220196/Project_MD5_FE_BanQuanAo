@@ -8,13 +8,13 @@
   justify-content: space-between;
   text-transform: uppercase;
   font-weight: 700;
-  padding: 10px 20px 10px 20px;
+  padding: 0 20px 10px 20px;
 }
 
-/* .logo {
+.logo {
   font-size: 24px;
   font-weight: bold;
-} */
+}
 
 .header-icons {
   display: flex;
@@ -37,7 +37,7 @@
   display: flex;
   align-items: center;
   position: relative;
-  right: 30%;
+  right: 0;
 }
 
 .search-icon {
@@ -53,9 +53,33 @@
   width: 20vw;
   border-bottom: 2px solid #ccc;
   font-size: 17px;
+  height: 60px;
 }
 
 .search-input:focus {
   outline: none;
   border-bottom: 2px solid #000;
+}
+.header-1 {
+  display: none;
+  width: 100%;
+  height: 75px;
+  position: sticky;
+  top: 0;
+  background-color: #fff;
+  z-index: 1000;
+}
+
+.header-2 {
+  width: 100%;
+  height: 75px;
+  background-color: #fff;
+  z-index: 999;
+}
+
+.header-1.show {
+  display: block;
+}
+.ant-space-item .ant-space {
+top: 10px;
 }
