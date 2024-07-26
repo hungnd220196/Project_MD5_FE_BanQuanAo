@@ -4,8 +4,15 @@ import { Button, Card, Spin, Pagination, Input } from 'antd';
 import { ShoppingCartOutlined } from '@ant-design/icons';
 import { handleFormatMoney } from '../utils/formatData';
 import Cookies from "js-cookie";
+import { useNavigate } from 'react-router-dom';
+import { fetchCart } from '../redux/slices/shoppingCartSlice';
+import { useDispatch } from 'react-redux';
+
 
 export default function ProductList({ searchKeyword }) {
+
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [products, setProducts] = useState([]);
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState(null);
@@ -13,6 +20,10 @@ export default function ProductList({ searchKeyword }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const pageSize = 5;
+
+  useEffect(() => {
+    dispatch(fetchCart());
+}, [dispatch]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -69,15 +80,25 @@ export default function ProductList({ searchKeyword }) {
     setSelectedCategory(categoryId);
     setCurrentPage(1);
   };
+  
+  // Chuyển sang trang Detail
+
+  const handleCardClick = (id) => {
+    navigate(`/productDetail/${id}`);
+    console.log("productId",products);
+  };
+
 
   const addToCart = async (product) => {
     try {
-      await axios.post('http://localhost:8080/api/v1/user/cart/add', { productId: product.id }, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get('token')}`,
-        },
-      });
-      
+      await axios.post('http://localhost:8080/api/v1/user/cart/add', { productId: product.id },
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        }
+      );
+      dispatch(fetchCart());
     } catch (error) {
       console.error('Error adding to cart:', error);
     }
@@ -119,18 +140,23 @@ export default function ProductList({ searchKeyword }) {
               width: '100%',
               height: '100%',
             }}
+            
+
             cover={
               <img
                 className="transform transition-transform duration-300 hover:scale-110"
                 style={{ maxHeight: 200, objectFit: 'cover' }}
                 alt={product.productName}
                 src={product.imageUrl}
+                onClick={() => {handleCardClick(product.id)}}
               />
             }
           >
             <div className="text-center flex flex-col gap-2">
-              <h3 className="font-semibold">{product.productName}</h3>
-              <p className="text-lg font-medium">{handleFormatMoney(product.price)}</p>
+
+              <h3 onClick={() => {handleCardClick(product.id)}} className="font-semibold">{product.productName}</h3>
+              <p onClick={() => {handleCardClick(product.id)}} className="text-lg font-medium">{(product.price)}</p>
+
               <Button type="primary" onClick={() => addToCart(product)}>
                 <ShoppingCartOutlined />
                 Thêm vào giỏ hàng

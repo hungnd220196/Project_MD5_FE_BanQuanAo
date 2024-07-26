@@ -1,8 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './CarouselComponent.css'; // Custom CSS for your carousel
+import { fetchAllBanners } from '../redux/slices/bannerSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
 const NextArrow = (props) => {
   const { className, style, onClick } = props;
@@ -27,6 +29,14 @@ const PrevArrow = (props) => {
 };
 
 const YourCarouselComponent = () => {
+
+  const { banners } = useSelector((state) => {console.log("state",state); return state.banners});
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+      dispatch(fetchAllBanners());
+  }, [dispatch]);
+
   const settings = {
     dots: true,
     infinite: true,
@@ -38,20 +48,14 @@ const YourCarouselComponent = () => {
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
   };
-
+  console.log(banners);
+  
   return (
     <div className="carousel-container">
       <Slider {...settings}>
-        <div>
-          <img src="/image/123.jpg" alt="Slide 1" />
-        </div>
-        <div>
-          <img src="/image/123.jpg" alt="Slide 2" />
-        </div>
-        <div>
-          <img src="/image/123.jpg" alt="Slide 3" />
-        </div>
-        {/* Add more slides as needed */}
+        {banners.map(item => <div>
+          <img src={item.image} alt="Slide 1" />
+        </div>)}
       </Slider>
     </div>
   );

@@ -1,13 +1,11 @@
 import React, { useEffect, useState } from "react";
-// import { useHistory } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
-import { Table, Spin, Space, Button, message, Upload, Modal, Form, Input, Switch, Flex, Select } from "antd";
+import { Table, Spin, Space, Button, message, Modal, Form, Input, Select } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-import axios from "axios";
-import './index.css';
 import PaginationComponent from "../../../components/PaginationComponents";
-import { changePage, fetchAllUser, fetchRoles, searchUser, updateUserRole, updateUserStatus } from "../../../redux/slices/userSlice";
-// import Search from "antd/es/input/Search";
+import { changePage, fetchAllUser, fetchRoles, searchUser, showAddress, updateUserRole, updateUserStatus } from "../../../redux/slices/userSlice";
+import './index.css';
+
 const { Search } = Input;
 const { Option } = Select;
 
@@ -19,7 +17,7 @@ export default function User() {
   const isLoading = useSelector((state) => state.user.isLoading);
   const searchResults = useSelector((state) => state.user.searchResults);
   const roles = useSelector((state) => state.user.roles);
-  
+  const addresses = useSelector((state) => state.user.addresses);
 
   const dispatch = useDispatch();
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -27,18 +25,21 @@ export default function User() {
   const [searchText, setSearchText] = useState("");
   const [isRoleModalVisible, setIsRoleModalVisible] = useState(false);
   const [newRole, setNewRole] = useState("");
-  // const [form] = Form.useForm();
-  // const [addForm] = Form.useForm();
+
+  useEffect(() => {
+    dispatch(showAddress());
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(fetchAllUser({ page: number, size }));
+    dispatch(fetchRoles());
+  }, [number, size, dispatch]);
 
   const handleChangePage = (page, pageSize) => {
     dispatch(changePage({ page: page - 1, size: pageSize }));
     dispatch(fetchAllUser({ page: page - 1, size: pageSize }));
   };
 
-  useEffect(() => {
-    dispatch(fetchAllUser({ page: number, size }));
-    dispatch(fetchRoles());
-  }, [number, size, dispatch]);
   const handleInfo = (user) => {
     setSelectedUser(user);
     setIsModalVisible(true);
@@ -112,7 +113,6 @@ export default function User() {
       dataIndex: 'fullName',
       key: 'fullName',
       sorter: (a, b) => a.fullName.localeCompare(b.fullName),
-
     },
     {
       title: 'Avatar',
@@ -136,7 +136,7 @@ export default function User() {
       title: 'Role',
       dataIndex: 'roles',
       key: 'role',
-       render: (roles) => {
+      render: (roles) => {
         if (Array.isArray(roles)) {
           return roles.map(role => roleMapping[role.roleName] || role.roleName).join(", ");
         }
@@ -144,11 +144,11 @@ export default function User() {
       },
       sorter: (a, b) => {
         const roleA = Array.isArray(a.roles) ? a.roles.map(role => roleMapping[role.roleName] || role.roleName).join(", ") : '';
-      const roleB = Array.isArray(b.roles) ? b.roles.map(role => roleMapping[role.roleName] || role.roleName).join(", ") : '';
-      return roleA.localeCompare(roleB);
+        const roleB = Array.isArray(b.roles) ? b.roles.map(role => roleMapping[role.roleName] || role.roleName).join(", ") : '';
+        return roleA.localeCompare(roleB);
       },
     },
-     {
+    {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
@@ -170,14 +170,10 @@ export default function User() {
     },
   ];
 
-  // const onHeaderRow = (columns, index) => {
-   
-  // };
-
   const rowClassName = (record, index) => {
     return index % 2 === 0 ? 'even-row' : 'odd-row';
   }
-
+console.log(addresses);
   const data = (searchText ? searchResults : user)?.map((item) => ({
     key: item.userId,
     userId: item.userId,
@@ -187,41 +183,57 @@ export default function User() {
     phone: item.phone,
     status: item.status,
     avatar: item.avatar,
-    address: item.address,
+    address: addresses.map((addr, index) => (
+      <div
+        key={addr.addressId || index}
+        style={{ display: "flex", alignItems: "center" }}
+      >
+        <div>
+          {"Đc "} {index + 1}{" "}
+          {" : " +
+            addr.streetAddress +
+            ", " +
+            addr.ward +
+            ", " +
+            addr.district +
+            ", " +
+            addr.province}
+        </div>
+      </div>
+    )),
     createdAt: item.createdAt,
     updatedAt: item.updatedAt,
     roles: Array.isArray(item.roles) ? item.roles : [],
     isDeleted: item.isDeleted,
   }));
+
   return (
     <>
       {isLoading ? (
         <Spin />
       ) : (
         <div className="user-table">
-           <Search
+          <Search
             placeholder="Search by username, full name, email or phone"
             onSearch={handleSearch}
             style={{ marginBottom: 16 }}
           />
           <Table 
-          columns={columns} 
-          dataSource={data} 
-          pagination={false}
-          className="custom-table-header" 
-          rowClassName={rowClassName}
-          // onHeaderRow={}
+            columns={columns} 
+            dataSource={data} 
+            pagination={false}
+            className="custom-table-header" 
+            rowClassName={rowClassName}
           />
         </div>
       )}
       <div style={{display : "flex",justifyContent:"center"}}>
-      <PaginationComponent
-      
-        current={number + 1}
-        total={total}
-        pageSize={size}
-        onChange={handleChangePage}
-      />
+        <PaginationComponent
+          current={number + 1}
+          total={total}
+          pageSize={size}
+          onChange={handleChangePage}
+        />
       </div>
       <Modal
         title="User Info"
@@ -241,7 +253,6 @@ export default function User() {
             <p><strong>Address:</strong> {selectedUser.address}</p>
             <p><strong>Created At:</strong> {selectedUser.createdAt}</p>
             <p><strong>Updated At:</strong> {selectedUser.updatedAt}</p>
-            {/* <p><strong>Is Deleted:</strong> {selectedUser.isDeleted ? 'Yes' : 'No'}</p> */}
           </div>
         )}
       </Modal>
