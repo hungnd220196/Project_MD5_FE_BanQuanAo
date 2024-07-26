@@ -1,5 +1,5 @@
 import { DeleteOutlined, MinusSquareOutlined, PlusSquareOutlined } from '@ant-design/icons';
-import { Divider, Drawer } from 'antd'
+import { Divider, Drawer, message } from 'antd'
 import axios from 'axios';
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from 'react'
@@ -33,7 +33,7 @@ export default function ShoppingCart({onClose,open}) {
   };
 
   const handleRemoveItem = async (cartItemId) => {
-    try {
+    try { 
       await axios.delete(
         `http://localhost:8080/api/v1/user/cart/items/${cartItemId}`,
         {
@@ -63,22 +63,7 @@ export default function ShoppingCart({onClose,open}) {
   return (
     <>
     <Drawer title="Giỏ hàng" placement="right" onClose={onClose} open={open}>
-        {/* <Checkbox
-          indeterminate={indeterminate}
-          onChange={onCheckAllChange}
-          checked={checkAll}
-        >
-          Chọn tất cả ({cartLength})
-        </Checkbox> */}
-        <Divider />
-        {/* <Checkbox.Group
-          style={{
-            width: '100%',
-          }}
-          value={checkedList}
-          onChange={onChange}
-        > */}
-
+     
         {cart.map((cart, index) => (
           <>
             <div key={cart.productId} className="flex items-center gap-2">
@@ -101,12 +86,12 @@ export default function ShoppingCart({onClose,open}) {
               />
               <p>{cart.productPrice * cart.orderQuantity}</p>
               <DeleteOutlined
-                onClick={() => handleRemoveItem(cart.productId)}
+                onClick={() => handleRemoveItem(cart.id)}
               />
             </div>
           </>
         ))}
-        {/* </Checkbox.Group> */}
+       
         <>
           <div className="flex items-center justify-between">
             <p>
