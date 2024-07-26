@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-// import { fetchNewProducts } from './services/productService';
 
 import axios from 'axios';
 import { Button, Card } from 'antd';
@@ -37,7 +36,7 @@ const NewProduct = () => {
           },
         }
       );
-      
+    
     } catch (error) {
       console.error('Error adding to cart:', error);
     }

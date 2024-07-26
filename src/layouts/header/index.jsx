@@ -32,7 +32,10 @@ import {
 } from "@ant-design/icons";
 import { Header } from "antd/es/layout/layout";
 
-export default function HeaderHomePage() {
+export default function HeaderHomePage({ setSearchKeyword }) {
+  const handleSearchChange = (e) => {
+    setSearchKeyword(e.target.value);
+  };
   const navigate = useNavigate();
   const [userData, setUserData] = useState(() =>
     JSON.parse(localStorage.getItem("user"))
@@ -75,16 +78,35 @@ export default function HeaderHomePage() {
 
   const handleRemoveItem = async (cartItemId) => {
     try {
-      await axios.delete(`http://localhost:8080/api/v1/user/cart/items/${cartItemId}`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("token")}`,
-        },
-      });
+      await axios.delete(
+        `http://localhost:8080/api/v1/user/cart/items/${cartItemId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${Cookies.get("token")}`,
+          },
+        }
+      );
       message.success("Sản phẩm đã được xóa khỏi giỏ hàng");
       fetchCart();
     } catch (error) {
       console.error("Error removing item from cart:", error);
       message.error("Có lỗi xảy ra khi xóa sản phẩm");
+    }
+  };
+
+  const handleClearCart = async () => {
+    try {
+      await axios.delete(`http://localhost:8080/api/v1/user/cart/clear`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      message.success("Tất cả sản phẩm đã được xóa khỏi giỏ hàng");
+      setCart([]); // Clear the cart in the state
+      setCartLength(0); // Update the cart length
+    } catch (error) {
+      console.error("Error clearing cart:", error);
+      message.error("Có lỗi xảy ra khi xóa tất cả sản phẩm");
     }
   };
 
@@ -95,7 +117,6 @@ export default function HeaderHomePage() {
   const onClose = () => {
     setOpen(false);
   };
-
 
   const handleModalCancel = () => {
     setIsModalVisible(false);
@@ -312,6 +333,7 @@ export default function HeaderHomePage() {
                     type="text"
                     placeholder="Tìm kiếm"
                     className="search-input"
+                    onChange={handleSearchChange}
                   />
                 </div>
                 <HeartOutlined className="header-icon" />
@@ -319,8 +341,7 @@ export default function HeaderHomePage() {
                   className="header-icon"
                   onClick={showDrawer}
                 />
-                <p className="bg-red-500 px-2 text-[12px] absolute top-[-8px] right-[-15px] rounded-lg hover:text-[14px] transition-all duration-75 ease-linear">
-                </p>
+                <p className="bg-red-500 px-2 text-[12px] absolute top-[-8px] right-[-15px] rounded-lg hover:text-[14px] transition-all duration-75 ease-linear"></p>
                 <div>
                   <Space size={16} wrap style={{ paddingLeft: "2vw" }}>
                     <Image
@@ -395,24 +416,8 @@ export default function HeaderHomePage() {
       </Modal>
 
       <Drawer title="Giỏ hàng" placement="right" onClose={onClose} open={open}>
-        {/* <Checkbox
-          indeterminate={indeterminate}
-          onChange={onCheckAllChange}
-          checked={checkAll}
-        >
-          Chọn tất cả ({cartLength})
-        </Checkbox> */}
         <Divider />
-        {/* <Checkbox.Group
-          style={{
-            width: '100%',
-          }}
-          value={checkedList}
-          onChange={onChange}
-        > */}
-
         {cart.map((cart, index) => (
-          
           <>
             <div key={cart.productId} className="flex items-center gap-2">
               <img
@@ -433,11 +438,21 @@ export default function HeaderHomePage() {
                 onClick={() => handleUpdateQuantity(cart.productId, 1)}
               />
               <p>{cart.productPrice * cart.orderQuantity}</p>
-              <DeleteOutlined onClick={() => handleRemoveItem(cart.productId)} />
+              <DeleteOutlined onClick={() => handleRemoveItem(cart.id)} />
             </div>
           </>
         ))}
-        {/* </Checkbox.Group> */}
+
+        <Button
+          type="danger"
+          icon={<DeleteOutlined />}
+          onClick={handleClearCart}
+          style={{ width: "100%" }}
+        >
+          Xóa hết
+        </Button>
+    
+        <Divider />
         <>
           <div className="flex items-center justify-between">
             <p>
@@ -448,9 +463,9 @@ export default function HeaderHomePage() {
                 0
               )}
             </p>
-            <button className="bg-orange-500 px-4 py-2 rounded-lg text-white">
+            <Button className="bg-orange-500 px-4 py-2 rounded-lg text-white">
               Thanh toán
-            </button>
+            </Button>
           </div>
         </>
       </Drawer>
