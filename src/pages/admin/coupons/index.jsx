@@ -81,16 +81,17 @@ export default function Coupons() {
       key: 'discount',
     },
     {
+      title: 'Quantity',
+      dataIndex: 'quantity',
+      key: 'quantity',
+    },
+    {
       title: 'EndDate',
       dataIndex: 'endDate',
       key: 'endDate',
       render: (endDate) => moment(endDate).format('DD-MM-YYYY'),
     },
-    {
-      title: 'Quantity',
-      dataIndex: 'quantity',
-      key: 'quantity',
-    },
+    
     {
       title: 'StartDate',
       dataIndex: 'startDate',
