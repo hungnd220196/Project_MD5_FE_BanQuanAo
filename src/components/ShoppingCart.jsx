@@ -20,7 +20,7 @@ export default function ShoppingCart({onClose,open}) {
 
 
   const handleRemoveItem = async (cartItemId) => {
-    try {
+    try { 
       await axios.delete(
         `http://localhost:8080/api/v1/user/cart/items/${cartItemId}`,
         {
@@ -50,6 +50,7 @@ export default function ShoppingCart({onClose,open}) {
   return (
     <>
     <Drawer title="Giỏ hàng" placement="right" onClose={onClose} open={open}>
+
         {/* <Checkbox
           indeterminate={indeterminate}
           onChange={onCheckAllChange}
@@ -93,8 +94,8 @@ export default function ShoppingCart({onClose,open}) {
               />
             </div>
           </>
-        ))};
-        {/* </Checkbox.Group> */}
+        ))}
+       
         <>
           <div className="flex items-center justify-between">
             <p>

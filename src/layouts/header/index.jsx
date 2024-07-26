@@ -1,7 +1,13 @@
-
-import { logout } from '../../redux/slices/authSlice'
-import './index.css';
-import { addNewAddress, changePassword, deleteAddress, showAddress, updateAvatarUser, updateInfoUser } from '../../redux/slices/userSlice'
+import { logout } from "../../redux/slices/authSlice";
+import "./index.css";
+import {
+  addNewAddress,
+  changePassword,
+  deleteAddress,
+  showAddress,
+  updateAvatarUser,
+  updateInfoUser,
+} from "../../redux/slices/userSlice";
 
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -38,20 +44,20 @@ import {
   EyeOutlined,
 } from "@ant-design/icons";
 import { Header } from "antd/es/layout/layout";
-import ShoppingCart from '../../components/ShoppingCart';
-import WishList from '../../components/WishList';
+import ShoppingCart from "../../components/ShoppingCart";
+import WishList from "../../components/WishList";
 
 export default function HeaderHomePage({ setSearchKeyword }) {
   const handleSearchChange = (e) => {
     setSearchKeyword(e.target.value);
   };
 
-//Header Scoll
+  //Header Scoll
 
-const [isHeader1Visible, setIsHeader1Visible] = useState(false);
+  const [isHeader1Visible, setIsHeader1Visible] = useState(false);
 
   const handleScroll = () => {
-    const header2Height = document.querySelector('.header-2').offsetHeight;
+    const header2Height = document.querySelector(".header-2").offsetHeight;
     if (window.scrollY > header2Height) {
       setIsHeader1Visible(true);
     } else {
@@ -60,12 +66,12 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll);
+      window.removeEventListener("scroll", handleScroll);
     };
   }, []);
-  //
+
   const navigate = useNavigate();
   const [userData, setUserData] = useState(() =>
     JSON.parse(localStorage.getItem("user"))
@@ -173,7 +179,7 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
   const [openWishList, setOpenWishList] = useState(false);
 
   const showDrawerWishList = () => {
-    console.log(111,openWishList);
+    console.log(111, openWishList);
     setOpenWishList(true);
   };
 
@@ -219,7 +225,6 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
 
   const [open, setOpen] = useState(false);
 
-
   const showDrawer = () => {
     setOpen(true);
   };
@@ -233,7 +238,6 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
     setchangePasswordModal(false);
     setAddAddressModal(false);
   };
-
 
   const edit = (record) => {
     formAdd.setFieldsValue({ value: record.value });
@@ -498,13 +502,11 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
       ]
     : [];
 
-
   return (
     <>
+      {/* Header 1 */}
 
-                {/* Header 1 */}
-
-      <Header className={`header-1 ${isHeader1Visible ? 'show' : ''}`}>
+      <Header className={`header-1 ${isHeader1Visible ? "show" : ""}`}>
         <div className="header-content">
           <div className="logo">ROUTINE</div>
           <Menu
@@ -531,23 +533,24 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
                   />
                 </div>
 
-                <HeartOutlined 
-                className="header-icon" 
-                onClick = {showDrawerWishList}/>
-                
+                <HeartOutlined
+                  className="header-icon"
+                  onClick={showDrawerWishList}
+                />
+
                 <ShoppingCartOutlined
                   className="header-icon"
-                  onClick = {showDrawer}
+                  onClick={showDrawer}
                 />
                 <p className="bg-red-500 px-2 text-[12px] absolute top-[-8px] right-[-15px] rounded-lg hover:text-[14px] transition-all duration-75 ease-linear"></p>
                 <div>
                   <Space size={16} wrap style={{ paddingLeft: "2vw" }}>
-                    <div style={{marginTop : "12px"}}>
-                    <Image
-                      width={50}
-                      style={{ borderRadius: "10%" }}
-                      src={userData.avatar}
-                    />
+                    <div style={{ marginTop: "12px" }}>
+                      <Image
+                        width={50}
+                        style={{ borderRadius: "10%" }}
+                        src={userData.avatar}
+                      />
                     </div>
                     <Dropdown
                       menu={{
@@ -556,7 +559,7 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
                       }}
                     >
                       <a onClick={(e) => e.preventDefault()}>
-                        <Space className='avarta-icon'>
+                        <Space className="avarta-icon">
                           {userData.fullName}
                           <DownOutlined />
                         </Space>
@@ -577,7 +580,7 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
                     className="search-input"
                   />
                 </div>
-                <HeartOutlined className="header-icon"/>
+                <HeartOutlined className="header-icon" />
                 <ShoppingCartOutlined className="header-icon" />
                 <NavLink to="/login">
                   <UserOutlined className="header-icon" />
@@ -726,98 +729,186 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
           </Form.Item>
         </Form>
       </Modal>
-      <ShoppingCart onClose={onClose} open={open}/>
-   
+      <ShoppingCart onClose={onClose} open={open} />
 
-              {/* Header2 */}
+      {/* Header2 */}
 
-    <Header className="header-2">
-      <div className="header-content">
-        <div className="logo" style={{marginLeft : "45%"}}>ROUTINE</div>
-        {Cookies.get("token") ? (
-        
-          <>
-            <div className="header-icons">
-              <div className="search-container">
-                <SearchOutlined className="search-icon" />
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm"
-                  className="search-input"
+      <Header className="header-2">
+        <div className="header-content">
+          <div className="logo" style={{ marginLeft: "45%" }}>
+            ROUTINE
+          </div>
+          {Cookies.get("token") ? (
+            <>
+              <div className="header-icons">
+                <div className="search-container">
+                  <SearchOutlined className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm"
+                    className="search-input"
+                  />
+                </div>
+
+                <HeartOutlined
+                  className="header-icon"
+                  onClick={showDrawerWishList}
                 />
-              </div>
 
-              <HeartOutlined 
-              className="header-icon" 
-              onClick={showDrawerWishList}/>
-              
-              <ShoppingCartOutlined
-                className="header-icon"
-                onClick={showDrawer}
-              />
-              <p className="bg-red-500 px-2 text-[12px] absolute top-[-8px] right-[-15px] rounded-lg hover:text-[14px] transition-all duration-75 ease-linear"></p>
-              <div>
-                <Space size={16} wrap style={{ paddingLeft: "2vw" }}>
-                <div style={{marginTop : "12px"}}>
-                    <Image
-                      width={50}
-                      style={{ borderRadius: "10%" }}
-                      src={userData.avatar}
-                    />
+                <ShoppingCartOutlined
+                  className="header-icon"
+                  onClick={showDrawer}
+                />
+                <p className="bg-red-500 px-2 text-[12px] absolute top-[-8px] right-[-15px] rounded-lg hover:text-[14px] transition-all duration-75 ease-linear"></p>
+                <div>
+                  <Space size={16} wrap style={{ paddingLeft: "2vw" }}>
+                    <div style={{ marginTop: "12px" }}>
+                      <Image
+                        width={50}
+                        style={{ borderRadius: "10%" }}
+                        src={userData.avatar}
+                      />
                     </div>
-                  <Dropdown
-                    menu={{
-                      items: dropDownItem,
-                      onClick: handleMenuClick,
-                    }}
-                  >
-                    <a onClick={(e) => e.preventDefault()}>
-                      <Space>
-                        {userData.fullName}
-                        <DownOutlined />
-                      </Space>
-                    </a>
-                  </Dropdown>
-                </Space>
+                    <Dropdown
+                      menu={{
+                        items: dropDownItem,
+                        onClick: handleMenuClick,
+                      }}
+                    >
+                      <a onClick={(e) => e.preventDefault()}>
+                        <Space>
+                          {userData.fullName}
+                          <DownOutlined />
+                        </Space>
+                      </a>
+                    </Dropdown>
+                  </Space>
+                </div>
               </div>
-            </div>
-          </>
-        ) : (
-          <>
-            <div className="header-icons">
-              <div className="search-container">
-                <SearchOutlined className="search-icon" />
-                <input
-                  type="text"
-                  placeholder="Tìm kiếm"
-                  className="search-input"
-                />
+            </>
+          ) : (
+            <>
+              <div className="header-icons">
+                <div className="search-container">
+                  <SearchOutlined className="search-icon" />
+                  <input
+                    type="text"
+                    placeholder="Tìm kiếm"
+                    className="search-input"
+                  />
+                </div>
+                <HeartOutlined className="header-icon" />
+                <ShoppingCartOutlined className="header-icon" />
+                <NavLink to="/login">
+                  <UserOutlined className="header-icon" />
+                </NavLink>
               </div>
-              <HeartOutlined className="header-icon" />
-              <ShoppingCartOutlined className="header-icon" />
-              <NavLink to="/login">
-                <UserOutlined className="header-icon" />
-              </NavLink>
-            </div>
-          </>
-        )}
-      </div>
-    </Header>
+            </>
+          )}
+        </div>
+      </Header>
 
-    <Modal
-      title="Thông tin cá nhân"
-      visible={isModalVisible}
-      onCancel={handleModalCancel}
-      footer={null}
-    >
-      {editingKey && (
-        <Form form={formAdd} layout="inline" onFinish={updateIUser}>
+      <Modal
+        title="Thông tin cá nhân"
+        visible={isModalVisible}
+        onCancel={handleModalCancel}
+        footer={null}
+      >
+        {editingKey && (
+          <Form form={formAdd} layout="inline" onFinish={updateIUser}>
+            <Form.Item
+              name="value"
+              label="Giá trị mới"
+              rules={[{ required: true, message: "Hãy nhập giá trị mới" }]}
+            >
+              <Input onChange={(e) => setEditingValue(e.target.value)} />
+            </Form.Item>
+            <Form.Item>
+              <Button type="primary" htmlType="submit">
+                Lưu
+              </Button>
+            </Form.Item>
+          </Form>
+        )}
+        {newdata && (
+          <Table columns={columns} dataSource={newdata} pagination={false} />
+        )}
+      </Modal>
+
+      <Modal
+        title="Đổi mật khẩu"
+        visible={changePasswordModal}
+        onCancel={handleModalCancel}
+        footer={null}
+      >
+        <Form
+          form={formChangePassword}
+          layout="inline"
+          onFinish={changePasswordUser}
+        >
           <Form.Item
-            name="value"
-            label="Giá trị mới"
-            rules={[{ required: true, message: "Hãy nhập giá trị mới" }]}
+            name="oldPass"
+            label="Nhập mật khẩu cũ"
+            rules={[{ required: true, message: "Nhập mật khẩu cũ" }]}
           >
-            <Input onChange={(e) => setEditingValue(e.target.value)} />
+            <Input
+              type={showOldPassword ? "text" : "password"}
+              suffix={
+                showOldPassword ? (
+                  <EyeInvisibleOutlined
+                    onClick={() => setShowOldPassword(!showOldPassword)}
+                  />
+                ) : (
+                  <EyeOutlined
+                    onClick={() => setShowOldPassword(!showOldPassword)}
+                  />
+                )
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name="newPass"
+            label="Nhập mật khẩu mới"
+            rules={[{ required: true, message: "Nhập mật khẩu mới" }]}
+          >
+            <Input
+              type={showNewPassword ? "text" : "password"}
+              suffix={
+                showNewPassword ? (
+                  <EyeInvisibleOutlined
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  />
+                ) : (
+                  <EyeOutlined
+                    onClick={() => setShowNewPassword(!showNewPassword)}
+                  />
+                )
+              }
+            />
+          </Form.Item>
+          <Form.Item
+            name="confirmNewPass"
+            label="Nhập lại mật khẩu"
+            rules={[{ required: true, message: "Nhập lại mật khẩu" }]}
+          >
+            <Input
+              type={showConfirmNewPassword ? "text" : "password"}
+              suffix={
+                showConfirmNewPassword ? (
+                  <EyeInvisibleOutlined
+                    onClick={() =>
+                      setShowConfirmNewPassword(!showConfirmNewPassword)
+                    }
+                  />
+                ) : (
+                  <EyeOutlined
+                    onClick={() =>
+                      setShowConfirmNewPassword(!showConfirmNewPassword)
+                    }
+                  />
+                )
+              }
+            />
           </Form.Item>
           <Form.Item>
             <Button type="primary" htmlType="submit">
@@ -825,127 +916,39 @@ const [isHeader1Visible, setIsHeader1Visible] = useState(false);
             </Button>
           </Form.Item>
         </Form>
-      )}
-      {newdata && (
-        <Table columns={columns} dataSource={newdata} pagination={false} />
-      )}
-    </Modal>
+      </Modal>
 
-    <Modal
-      title="Đổi mật khẩu"
-      visible={changePasswordModal}
-      onCancel={handleModalCancel}
-      footer={null}
-    >
-      <Form
-        form={formChangePassword}
-        layout="inline"
-        onFinish={changePasswordUser}
+      <Modal
+        title="Thêm địa chỉ"
+        visible={addAddressModal}
+        onCancel={handleModalCancel}
+        onOk={() => formAddAddress.submit()}
+        okText="Thêm"
+        cancelText="Đóng"
       >
-        <Form.Item
-          name="oldPass"
-          label="Nhập mật khẩu cũ"
-          rules={[{ required: true, message: "Nhập mật khẩu cũ" }]}
-        >
-          <Input
-            type={showOldPassword ? "text" : "password"}
-            suffix={
-              showOldPassword ? (
-                <EyeInvisibleOutlined
-                  onClick={() => setShowOldPassword(!showOldPassword)}
-                />
-              ) : (
-                <EyeOutlined
-                  onClick={() => setShowOldPassword(!showOldPassword)}
-                />
-              )
-            }
-          />
-        </Form.Item>
-        <Form.Item
-          name="newPass"
-          label="Nhập mật khẩu mới"
-          rules={[{ required: true, message: "Nhập mật khẩu mới" }]}
-        >
-          <Input
-            type={showNewPassword ? "text" : "password"}
-            suffix={
-              showNewPassword ? (
-                <EyeInvisibleOutlined
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                />
-              ) : (
-                <EyeOutlined
-                  onClick={() => setShowNewPassword(!showNewPassword)}
-                />
-              )
-            }
-          />
-        </Form.Item>
-        <Form.Item
-          name="confirmNewPass"
-          label="Nhập lại mật khẩu"
-          rules={[{ required: true, message: "Nhập lại mật khẩu" }]}
-        >
-          <Input
-            type={showConfirmNewPassword ? "text" : "password"}
-            suffix={
-              showConfirmNewPassword ? (
-                <EyeInvisibleOutlined
-                  onClick={() =>
-                    setShowConfirmNewPassword(!showConfirmNewPassword)
-                  }
-                />
-              ) : (
-                <EyeOutlined
-                  onClick={() =>
-                    setShowConfirmNewPassword(!showConfirmNewPassword)
-                  }
-                />
-              )
-            }
-          />
-        </Form.Item>
-        <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Lưu
-          </Button>
-        </Form.Item>
-      </Form>
-    </Modal>
-
-    <Modal
-      title="Thêm địa chỉ"
-      visible={addAddressModal}
-      onCancel={handleModalCancel}
-      onOk={() => formAddAddress.submit()}
-      okText="Thêm"
-      cancelText="Đóng"
-    >
-      <Form form={formAddAddress} layout="inline" onFinish={addAddressUser}>
-        <Form.Item name="streetAddress" label="Nhập số nhà / Số đường">
-          <Input type="text" />
-        </Form.Item>
-        <Form.Item name="ward" label="Nhập xã/phường">
-          <Input type="text" />
-        </Form.Item>
-        <Form.Item name="district" label="Nhập Quận/Huyện">
-          <Input type="text" />
-        </Form.Item>
-        <Form.Item name="province" label="Nhập Tỉnh/Thành phố">
-          <Input type="text" />
-        </Form.Item>
-        <Form.Item name="receiveName" label="Nhập tên người nhận">
-          <Input type="text" />
-        </Form.Item>
-        <Form.Item name="phone" label="Nhập số điện thoại ">
-          <Input type="text" />
-        </Form.Item>
-      </Form>
-    </Modal>
-    <ShoppingCart onClose={onClose} open={open}/>
-    <WishList onCloseWishList={onCloseWishList} openWishList={openWishList}/>
-  </>
-
+        <Form form={formAddAddress} layout="inline" onFinish={addAddressUser}>
+          <Form.Item name="streetAddress" label="Nhập số nhà / Số đường">
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item name="ward" label="Nhập xã/phường">
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item name="district" label="Nhập Quận/Huyện">
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item name="province" label="Nhập Tỉnh/Thành phố">
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item name="receiveName" label="Nhập tên người nhận">
+            <Input type="text" />
+          </Form.Item>
+          <Form.Item name="phone" label="Nhập số điện thoại ">
+            <Input type="text" />
+          </Form.Item>
+        </Form>
+      </Modal>
+      <ShoppingCart onClose={onClose} open={open} />
+      <WishList onCloseWishList={onCloseWishList} openWishList={openWishList} />
+    </>
   );
 }
