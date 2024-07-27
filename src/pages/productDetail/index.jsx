@@ -1,18 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import Cookies from "js-cookie";
-import BASE_URL from '../../api';
-import { DELETE, GET, POST } from '../../constants/httpMethod';
-import { Button, Col, Divider, Input, InputNumber, Layout, message, Row, Typography, List } from 'antd';
+import { Button, Col, Divider, InputNumber, Layout, Row, Typography } from 'antd';
 import { Content } from 'antd/es/layout/layout';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
 import HeaderHomePage from '../../layouts/header';
-import { HeartOutlined, ShoppingCartOutlined, StarOutlined } from '@ant-design/icons';
+import { HeartOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { addWishList, fetchWishList } from '../../redux/slices/wishlistSlice';
 import { useDispatch } from 'react-redux';
 import Comments from '../../components/Comment';
+
+import RelatedProducts from '../../components/RelatedProduct';
+
+
 import { fetchAllComments } from '../../routes/publicRoute/commentSlice';
 import { fetchCart } from '../../redux/slices/shoppingCartSlice';
+
 
 const { Title, Text } = Typography;
 
@@ -27,7 +30,6 @@ export default function ProductDetail() {
     useEffect(() => {
         dispatch(fetchCart());
         dispatch(fetchWishList());
-        // dispatch(fetchAllComments(id))
     }, [dispatch]);
 
     useEffect(() => {
@@ -67,24 +69,6 @@ export default function ProductDetail() {
         dispatch(fetchWishList());
     };
 
-    // const handleCommentSubmit = async () => {
-    //     try {
-    //         await axios.post(`http://localhost:8080/api/v1/user/products/${id}/comments`, { content: newComment }, {
-    //             headers: {
-    //                 Authorization: `Bearer ${Cookies.get('token')}`,
-    //             },
-    //         });
-    //         message.success('Đã thêm bình luận');
-    //         setNewComment('');
-    //         // Refresh comments
-    //         const response = await axios.get(`http://localhost:8080/api/v1/user/products/${id}/comments`);
-    //         setComments(response.data);
-    //     } catch (error) {
-    //         console.error('Error adding comment:', error);
-    //         message.error('Có lỗi xảy ra khi thêm bình luận');
-    //     }
-    // };
-
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -92,7 +76,6 @@ export default function ProductDetail() {
     if (!productDel) {
         return <div>Product not found</div>;
     }
-    console.log("aaa",productDel);
 
     return (
         <Layout>
@@ -120,25 +103,14 @@ export default function ProductDetail() {
                         <Divider />
                         <Text strong>Chọn màu sắc:</Text>
                         <div>
-                            {/* {product.colors.map((color) => (
-                                <Button style={{ margin: '4px' }} key={color}>{color}</Button>
-                            ))} */}
+                            {/* Add color buttons */}
                         </div>
                         <Divider />
                         <Text strong>Chọn size:</Text>
                         <div>
-                            {/* {product.sizes.map((size) => (
-                                <Button 
-                                    style={{ margin: '4px' }} 
-                                    key={size}
-                                    disabled={size === 'XL'}
-                                >
-                                    {size}
-                                </Button>
-                            ))} */}
+                            {/* Add size buttons */}
                         </div>
                         <Divider />
-                    
                         <Text strong>Chọn số lượng:</Text>
                         <InputNumber min={1} defaultValue={1} style={{ marginLeft: '8px' }} />
                         <Divider />
@@ -148,38 +120,6 @@ export default function ProductDetail() {
                         <Button onClick={() => addToWishList(productDel.id)} icon={<HeartOutlined />}>Yêu thích</Button>
                         <Divider />
                         <Comments productId={productDel.id} />
-                        {/* <Title level={3}>Đánh giá và Bình luận</Title>
-                        <div className='flex'>
-                        <StarOutlined/><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined />
-                        </div>
-                        <div>
-                            <Input.TextArea
-                                rows={4}
-                                value={newComment}
-                                onChange={(e) => setNewComment(e.target.value)}
-                                placeholder="Nhập bình luận của bạn..."
-                            />
-                            <Button
-                                type="primary"
-                                onClick={handleCommentSubmit}
-                                style={{ marginTop: '16px' }}
-                            >
-                                Gửi bình luận
-                            </Button>
-                        </div>
-                        <Divider />
-                        <List
-                            header={<div>Bình luận</div>}
-                            bordered
-                            dataSource={comments}
-                            renderItem={item => (
-                                <List.Item>
-                                    <List.Item.Meta
-                                        description={item.content}
-                                    />
-                                </List.Item>
-                            )}
-                        /> */}
                     </Col>
                 </Row>
                 <Divider />
@@ -187,6 +127,9 @@ export default function ProductDetail() {
                 <Text>
                     Áo thun tay ngắn là một trong những item cơ bản phổ biến trong thời trang thường ngày...
                 </Text>
+                <Divider />
+                <Title level={3}>Sản Phẩm Liên Quan</Title>
+                <RelatedProducts categoryId={productDel.categoryId} /> {/* Add the RelatedProducts component */}
             </Content>
         </Layout>
     );

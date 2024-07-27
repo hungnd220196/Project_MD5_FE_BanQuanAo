@@ -201,21 +201,6 @@ export default function HeaderHomePage({ setSearchKeyword }) {
     }
   };
 
-  const handleClearCart = async () => {
-    try {
-      await axios.delete(`http://localhost:8080/api/v1/user/cart/clear`, {
-        headers: {
-          Authorization: `Bearer ${Cookies.get("token")}`,
-        },
-      });
-      message.success("Tất cả sản phẩm đã được xóa khỏi giỏ hàng");
-      setCart([]); // Clear the cart in the state
-      setCartLength(0); // Update the cart length
-    } catch (error) {
-      console.error("Error clearing cart:", error);
-      message.error("Có lỗi xảy ra khi xóa tất cả sản phẩm");
-    }
-  };
 
   const onCloseWishList = () => {
     setOpenWishList(false);
