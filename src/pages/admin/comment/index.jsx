@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllComments, updateCommentStatus, deleteComment } from '../../../redux/slices/commentSlice';
+// import {  updateCommentStatus, deleteComment } from '../../../redux/slices/commentSlice';
 import { Table, Button, message, Space, Dropdown, Menu, Spin } from 'antd';
+
 import moment from 'moment';
+
+import { deleteComment, fetchAllComments, updateCommentStatus } from '../../../routes/publicRoute/commentSlice';
+
 
 const commentStatusOptions = {
   true: 'Approved',

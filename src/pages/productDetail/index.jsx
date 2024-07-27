@@ -9,7 +9,12 @@ import { HeartOutlined, ShoppingCartOutlined } from '@ant-design/icons';
 import { addWishList, fetchWishList } from '../../redux/slices/wishlistSlice';
 import { useDispatch } from 'react-redux';
 import Comments from '../../components/Comment';
+
 import RelatedProducts from '../../components/RelatedProduct';
+
+
+import { fetchAllComments } from '../../routes/publicRoute/commentSlice';
+import { fetchCart } from '../../redux/slices/shoppingCartSlice';
 
 
 const { Title, Text } = Typography;
@@ -23,6 +28,7 @@ export default function ProductDetail() {
     const { id } = useParams();
 
     useEffect(() => {
+        dispatch(fetchCart());
         dispatch(fetchWishList());
     }, [dispatch]);
 
@@ -52,6 +58,7 @@ export default function ProductDetail() {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             });
+            dispatch(fetchCart());
         } catch (error) {
             console.error('Error adding to cart:', error);
         }
