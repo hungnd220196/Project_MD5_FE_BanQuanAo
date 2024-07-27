@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { List, Input, Button, Divider, Typography, Select, message } from 'antd';
 import { StarOutlined } from '@ant-design/icons';
-import { addComment, fetchCommentsByProduct } from '../redux/slices/commentsSlice';
+import { addComment, fetchCommentsByProduct } from '../redux/slices/commentsUserSlice';
 
 const { Title } = Typography;
 const { Option } = Select;
@@ -94,6 +94,7 @@ const Comments = ({ productId }) => {
         />
       </div>
       <Divider />
+      {console.log(comments)}
       <List
         header={<div>Bình luận</div>}
         bordered

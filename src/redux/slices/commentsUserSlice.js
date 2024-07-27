@@ -27,7 +27,7 @@ export const addComment = createAsyncThunk("comments/add", async (commentData) =
   return response.data; // Giả sử API trả về bình luận vừa thêm
 });
 
-const commentsSlice = createSlice({
+const commentsUserSlice = createSlice({
   name: "comments",
   initialState: {
     comments: [], // Danh sách bình luận
@@ -38,6 +38,7 @@ const commentsSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(fetchCommentsByProduct.fulfilled, (state, action) => {
+        console.log(action.payload);
         state.comments = action.payload; // Cập nhật danh sách bình luận
       })
       .addCase(addComment.fulfilled, (state, action) => {
@@ -46,4 +47,4 @@ const commentsSlice = createSlice({
   },
 });
 
-export default commentsSlice.reducer;
+export default commentsUserSlice.reducer;

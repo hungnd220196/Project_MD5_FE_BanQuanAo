@@ -11,6 +11,7 @@ import { HeartOutlined, ShoppingCartOutlined, StarOutlined } from '@ant-design/i
 import { addWishList, fetchWishList } from '../../redux/slices/wishlistSlice';
 import { useDispatch } from 'react-redux';
 import Comments from '../../components/Comment';
+import { fetchAllComments } from '../../redux/slices/commentSlice';
 
 const { Title, Text } = Typography;
 
@@ -24,6 +25,7 @@ export default function ProductDetail() {
 
     useEffect(() => {
         dispatch(fetchWishList());
+        // dispatch(fetchAllComments(id))
     }, [dispatch]);
 
     useEffect(() => {
@@ -45,18 +47,20 @@ export default function ProductDetail() {
         fetchProduct();
     }, [id]);
 
-    useEffect(() => {
-        const fetchComments = async () => {
-            try {
-                const response = await axios.get(`http://localhost:8080/api/v1/user/products/${id}/comments`);
-                setComments(response.data);
-            } catch (error) {
-                console.error('Error fetching comments:', error);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchComments = async (id) => {
+    //         try {
+    //             const response = await axios.get(`http://localhost:8080/api/v1/user/comments/product/${id}`);
+    //             setComments(response.data);
+    //         } catch (error) {
+    //             console.error('Error fetching comments:', error);
+    //         }
+    //     };
 
-        fetchComments();
-    }, [id]);
+    //     fetchComments();
+    // }, [id]);
+
+
 
     const addToCart = async (id) => {
         try {
