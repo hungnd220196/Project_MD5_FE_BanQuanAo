@@ -10,6 +10,7 @@ import HeaderHomePage from '../../layouts/header';
 import { HeartOutlined, ShoppingCartOutlined, StarOutlined } from '@ant-design/icons';
 import { addWishList, fetchWishList } from '../../redux/slices/wishlistSlice';
 import { useDispatch } from 'react-redux';
+import Comments from '../../components/Comment';
 
 const { Title, Text } = Typography;
 
@@ -74,23 +75,23 @@ export default function ProductDetail() {
         dispatch(fetchWishList());
     };
 
-    const handleCommentSubmit = async () => {
-        try {
-            await axios.post(`http://localhost:8080/api/v1/user/products/${id}/comments`, { content: newComment }, {
-                headers: {
-                    Authorization: `Bearer ${Cookies.get('token')}`,
-                },
-            });
-            message.success('Đã thêm bình luận');
-            setNewComment('');
-            // Refresh comments
-            const response = await axios.get(`http://localhost:8080/api/v1/user/products/${id}/comments`);
-            setComments(response.data);
-        } catch (error) {
-            console.error('Error adding comment:', error);
-            message.error('Có lỗi xảy ra khi thêm bình luận');
-        }
-    };
+    // const handleCommentSubmit = async () => {
+    //     try {
+    //         await axios.post(`http://localhost:8080/api/v1/user/products/${id}/comments`, { content: newComment }, {
+    //             headers: {
+    //                 Authorization: `Bearer ${Cookies.get('token')}`,
+    //             },
+    //         });
+    //         message.success('Đã thêm bình luận');
+    //         setNewComment('');
+    //         // Refresh comments
+    //         const response = await axios.get(`http://localhost:8080/api/v1/user/products/${id}/comments`);
+    //         setComments(response.data);
+    //     } catch (error) {
+    //         console.error('Error adding comment:', error);
+    //         message.error('Có lỗi xảy ra khi thêm bình luận');
+    //     }
+    // };
 
     if (loading) {
         return <div>Loading...</div>;
@@ -99,6 +100,7 @@ export default function ProductDetail() {
     if (!productDel) {
         return <div>Product not found</div>;
     }
+    console.log("aaa",productDel);
 
     return (
         <Layout>
@@ -144,6 +146,7 @@ export default function ProductDetail() {
                             ))} */}
                         </div>
                         <Divider />
+                    
                         <Text strong>Chọn số lượng:</Text>
                         <InputNumber min={1} defaultValue={1} style={{ marginLeft: '8px' }} />
                         <Divider />
@@ -152,7 +155,8 @@ export default function ProductDetail() {
                         </Button>
                         <Button onClick={() => addToWishList(productDel.id)} icon={<HeartOutlined />}>Yêu thích</Button>
                         <Divider />
-                        <Title level={3}>Đánh giá và Bình luận</Title>
+                        <Comments productId={productDel.id} />
+                        {/* <Title level={3}>Đánh giá và Bình luận</Title>
                         <div className='flex'>
                         <StarOutlined/><StarOutlined /><StarOutlined /><StarOutlined /><StarOutlined />
                         </div>
@@ -183,7 +187,7 @@ export default function ProductDetail() {
                                     />
                                 </List.Item>
                             )}
-                        />
+                        /> */}
                     </Col>
                 </Row>
                 <Divider />
