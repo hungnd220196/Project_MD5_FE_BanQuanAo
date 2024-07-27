@@ -78,6 +78,16 @@ export default function MenuAdmin() {
       icon: <PieChartOutlined />,
       label: <NavLink to="/admin/coupons">Quản lý mã giảm giá</NavLink>,
     },
+    {
+      key: '8',
+      icon: <PieChartOutlined />,
+      label: <NavLink to="/admin/comments">Quản lý bình luận</NavLink>,
+    },
+    {
+      key: '9',
+      icon: <PieChartOutlined />,
+      label: <NavLink to="/admin/reviews">Quản lý đánh giá</NavLink>,
+    },
   ];
 
 const dropDownItem = [

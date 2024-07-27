@@ -9,7 +9,8 @@ import couponsSlice from "./couponsSlice";
 import orderSlice from "./orderSlice";
 import shoppingCartSlice from "./shoppingCartSlice";
 import wishlistSlice from "./wishlistSlice";
-import commentsSlice from "./commentsSlice";
+import commentSlice from "./commentSlice";
+import reviewSlice from "./reviewSlice";
 
 
 const reducers = combineReducers({
@@ -22,7 +23,9 @@ const reducers = combineReducers({
   orders: orderSlice,
   shoppingCarts : shoppingCartSlice,
   wishList : wishlistSlice,
-  comments : commentsSlice
+  comment: commentSlice,
+  review: reviewSlice,
+ 
 
 });
 
