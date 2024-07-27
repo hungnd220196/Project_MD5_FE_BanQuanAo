@@ -11,7 +11,7 @@ import shoppingCartSlice from "./shoppingCartSlice";
 import wishlistSlice from "./wishlistSlice";
 import commentSlice from "./commentSlice";
 import reviewSlice from "./reviewSlice";
-
+import commentsUserSlice from "./commentsUserSlice";
 
 const reducers = combineReducers({
   auth: authSlice,
@@ -21,12 +21,11 @@ const reducers = combineReducers({
   banners: bannerSlice,
   coupons: couponsSlice,
   orders: orderSlice,
-  shoppingCarts : shoppingCartSlice,
-  wishList : wishlistSlice,
-  comment: commentSlice,
+  shoppingCarts: shoppingCartSlice,
+  wishList: wishlistSlice,
+  comments: commentsUserSlice,
+  comment : commentSlice,
   review: reviewSlice,
- 
-
 });
 
 export default reducers;
