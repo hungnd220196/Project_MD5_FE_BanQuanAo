@@ -9,6 +9,9 @@ import couponsSlice from "./couponsSlice";
 import orderSlice from "./orderSlice";
 import shoppingCartSlice from "./shoppingCartSlice";
 import wishlistSlice from "./wishlistSlice";
+import commentSlice from "./commentSlice";
+import reviewSlice from "./reviewSlice";
+
 
 
 const reducers = combineReducers({
@@ -18,9 +21,12 @@ const reducers = combineReducers({
   user: userSlice,
   banners: bannerSlice,
   coupons: couponsSlice,
-  orders: orderSlice
+  orders: orderSlice,
   shoppingCarts : shoppingCartSlice,
   wishList : wishlistSlice,
+  comment: commentSlice,
+  review: reviewSlice,
+ 
 
 });
 

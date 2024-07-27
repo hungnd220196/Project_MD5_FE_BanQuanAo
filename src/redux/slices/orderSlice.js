@@ -21,7 +21,7 @@ export const approveOrder = createAsyncThunk(
   async ({ orderId, orderStatusName }, thunkAPI) => {
     try {
       const response = await axios.put(
-        `http://localhost:8080/api/v1/orders/${orderId}/status`,
+        `http://localhost:8080/api/v1/admin/orders/${orderId}/status`,
         { orderStatusName },
         {
           headers: {
