@@ -11,7 +11,6 @@ export default function BannerAdmin() {
   const [file, setFile] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalVisible, setIsModalVisible] = useState(false);
-  // const [editForm] = Form.useForm();
   const [addForm] = Form.useForm();
 
   useEffect(() => {

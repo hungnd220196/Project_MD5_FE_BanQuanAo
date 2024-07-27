@@ -2,10 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchAllComments, updateCommentStatus, deleteComment } from '../../../redux/slices/commentSlice';
 import { Table, Button, message, Space, Dropdown, Menu, Spin } from 'antd';
+import moment from 'moment';
 
 const commentStatusOptions = {
-  false: 'Approved',
-  true: 'Pending'
+  true: 'Approved',
+  false: 'Pending'
 };
 
 export default function CommentManagement() {
@@ -13,7 +14,6 @@ export default function CommentManagement() {
   const isLoading = useSelector(state => state.comment.isLoading);
   const dispatch = useDispatch();
   
-  // State để lưu trữ các bình luận bị bỏ qua
   const [ignoredComments, setIgnoredComments] = useState(() => {
     const saved = localStorage.getItem('ignoredComments');
     return saved ? JSON.parse(saved) : [];
@@ -84,6 +84,17 @@ export default function CommentManagement() {
       key: 'content',
     },
     {
+      title: 'Image',
+      dataIndex: 'image',
+      key: 'image',
+    },
+    {
+      title: 'CreatedAt',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      render: (createdAt) => moment(createdAt).format('DD-MM-YYYY HH:mm:ss'),
+    },
+    {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
@@ -94,9 +105,11 @@ export default function CommentManagement() {
       key: 'action',
       render: (text, record) => (
         <Space size="middle">
-          <Dropdown overlay={renderStatusMenu(record.id)} trigger={['click']}>
-            <Button type="link">Change Status</Button>
-          </Dropdown>
+          {record.status === false && (
+            <Dropdown overlay={renderStatusMenu(record.id)} trigger={['click']}>
+              <Button type="link">Change Status</Button>
+            </Dropdown>
+          )}
           <Button type="link" onClick={() => handleDelete(record.id)}>Delete</Button>
           <Button type="link" onClick={() => handleIgnore(record.id)}>Ignore</Button>
         </Space>
@@ -104,13 +117,14 @@ export default function CommentManagement() {
     },
   ];
 
-  // Lọc ra các bình luận không bị bỏ qua
   const data = comments
     ?.filter(comment => !ignoredComments.includes(comment.id))
     .map(comment => ({
       key: comment.id,
       id: comment.id,
       productName: comment.product.productName,
+      image: comment.image,
+      createdAt: comment.createdAt,
       userName: comment.user.username,
       content: comment.comment,
       status: comment.status,

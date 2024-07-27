@@ -1,6 +1,6 @@
 .carousel-container {
   width: 100%;
-  max-width: 95vw; /* Make it span full viewport width */
+  max-width: 95vw; 
   margin: auto;
   margin-top: 10px;
 }
