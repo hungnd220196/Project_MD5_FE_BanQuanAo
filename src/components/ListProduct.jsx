@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Button, Card, Spin, Pagination, Input } from 'antd';
+import { Button, Card, Spin, Pagination } from 'antd';
 import { ShoppingCartOutlined } from '@ant-design/icons';
 import { handleFormatMoney } from '../utils/formatData';
 import Cookies from "js-cookie";
 import { useNavigate } from 'react-router-dom';
 import { fetchCart } from '../redux/slices/shoppingCartSlice';
 import { useDispatch } from 'react-redux';
-
 
 export default function ProductList({ searchKeyword }) {
 
@@ -20,10 +19,12 @@ export default function ProductList({ searchKeyword }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalProducts, setTotalProducts] = useState(0);
   const pageSize = 5;
+  const [sortField, setSortField] = useState('productName');
+  const [sortOrder, setSortOrder] = useState('asc'); 
 
   useEffect(() => {
     dispatch(fetchCart());
-}, [dispatch]);
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -46,8 +47,9 @@ export default function ProductList({ searchKeyword }) {
         const params = {
           page: page - 1,
           size: pageSize,
+          sort: `${sortField},${sortOrder}`,
         };
-        
+    
         if (keyword) {
           url = 'http://localhost:8080/api/v1/user/products/search';
           params.search = keyword;
@@ -59,7 +61,7 @@ export default function ProductList({ searchKeyword }) {
 
         const response = await axios.get(url, { params });
         console.log(response);
-        setProducts(categoryId? response.data.data: response.data.content || []);
+        setProducts(categoryId ? response.data.data : response.data.content || []);
         setTotalProducts(response.data.totalElements || 0);
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -70,7 +72,7 @@ export default function ProductList({ searchKeyword }) {
     };
 
     fetchProducts(currentPage, selectedCategory, searchKeyword);
-  }, [currentPage, selectedCategory, searchKeyword]);
+  }, [currentPage, selectedCategory, searchKeyword, sortField, sortOrder]);
 
   const handlePageChange = (page) => {
     setCurrentPage(page);
@@ -80,14 +82,22 @@ export default function ProductList({ searchKeyword }) {
     setSelectedCategory(categoryId);
     setCurrentPage(1);
   };
-  
-  // Chuyển sang trang Detail
+
+  const handleSortChange = (field) => {
+    setSortField(field);
+    setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
+    setCurrentPage(1);
+  };
+
+  const handleAllProducts = () => {
+    setSelectedCategory(null);
+    setCurrentPage(1);
+    
+  };
 
   const handleCardClick = (id) => {
     navigate(`/productDetail/${id}`);
-    console.log("productId",products);
   };
-
 
   const addToCart = async (product) => {
     try {
@@ -113,13 +123,21 @@ export default function ProductList({ searchKeyword }) {
   }
 
   return (
-    <main className="px-12">
+    <main className="px-20">
       <h3 className="text-center uppercase font-semibold py-6">
         Danh sách sản phẩm
       </h3>
-     
+
+      <div className='flex justify-between'>
       <div className="flex justify-center mb-4">
-        {categories.map((category) => (
+        <Button
+          type={!selectedCategory ? 'primary' : 'default'}
+          onClick={handleAllProducts}
+          className="mx-2"
+        >
+          Tất cả sản phẩm
+        </Button>
+        {categories?.map((category) => (
           <Button
             key={category.categoryId}
             type={selectedCategory === category.categoryId ? 'primary' : 'default'}
@@ -131,8 +149,24 @@ export default function ProductList({ searchKeyword }) {
         ))}
       </div>
 
+      <div className="flex justify-center mb-4">
+        <Button
+          onClick={() => handleSortChange('productName')}
+          className="mx-2"
+        >
+          Sort by Name {sortField === 'productName' && (sortOrder === 'asc' ? '↑' : '↓')}
+        </Button>
+        <Button
+          onClick={() => handleSortChange('price')}
+          className="mx-2"
+        >
+          Sort by Price {sortField === 'price' && (sortOrder === 'asc' ? '↑' : '↓')}
+        </Button>
+      </div>
+      </div>
+
       <div className="grid grid-cols-5 gap-4">
-        {Array.isArray(products) && products.map((product) => (
+        {Array.isArray(products) && products?.map((product) => (
           <Card
             key={product.id}
             hoverable
@@ -140,23 +174,19 @@ export default function ProductList({ searchKeyword }) {
               width: '100%',
               height: '100%',
             }}
-            
-
             cover={
               <img
                 className="transform transition-transform duration-300 hover:scale-110"
                 style={{ maxHeight: 200, objectFit: 'cover' }}
                 alt={product.productName}
                 src={product.imageUrl}
-                onClick={() => {handleCardClick(product.id)}}
+                onClick={() => handleCardClick(product.id)}
               />
             }
           >
             <div className="text-center flex flex-col gap-2">
-
-              <h3 onClick={() => {handleCardClick(product.id)}} className="font-semibold">{product.productName}</h3>
-              <p onClick={() => {handleCardClick(product.id)}} className="text-lg font-medium">{(product.price)}</p>
-
+              <h3 onClick={() => handleCardClick(product.id)} className="font-semibold">{product.productName}</h3>
+              <p onClick={() => handleCardClick(product.id)} className="text-lg font-medium">{handleFormatMoney(product.price)}</p>
               <Button type="primary" onClick={() => addToCart(product)}>
                 <ShoppingCartOutlined />
                 Thêm vào giỏ hàng

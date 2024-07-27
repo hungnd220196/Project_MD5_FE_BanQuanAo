@@ -31,7 +31,6 @@ export default function Order() {
     dispatch(fetchAllOrders({ page: number, size }));
   }, [number, size, dispatch]);
 
-
   const handleApprove = async (orderId, orderStatusName) => {
     try {
       await dispatch(approveOrder({ orderId, orderStatusName })).unwrap();
@@ -108,7 +107,9 @@ export default function Order() {
     },
   ];
 
-  const data = orders?.map((item) => ({
+  const filteredOrders = orders?.filter((item) => !['SUCCESS', 'DENIED', 'CANCELLED'].includes(item.status));
+
+  const data = filteredOrders?.map((item) => ({
     key: item.orderId,
     orderId: item.orderId,
     serialNumber: item.serialNumber,
@@ -118,7 +119,6 @@ export default function Order() {
     totalPrice: item.totalPrice,
     status: item.status,
   }));
-  console.log(data);
 
   return (
     <>

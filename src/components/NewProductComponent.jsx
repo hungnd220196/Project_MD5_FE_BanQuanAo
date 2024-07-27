@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { Button, Card } from 'antd';
 import { ShoppingCartOutlined } from '@ant-design/icons';
+import { handleFormatMoney } from '../utils/formatData';
 
 const NewProduct = () => {
   const [products, setProducts] = useState([]);
@@ -68,7 +69,7 @@ const NewProduct = () => {
           >
             <div className="text-center flex flex-col gap-2">
               <h3 className="font-semibold">{product.productName}</h3>
-              <p className="text-lg font-medium">{(product.price)}</p>
+              <p className="text-lg font-medium">{handleFormatMoney(product.price)}</p>
               <Button type="primary" onClick={() => addToCart(product)}>
                 <ShoppingCartOutlined />
                 Thêm vào giỏ hàng
