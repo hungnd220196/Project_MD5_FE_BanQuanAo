@@ -11,7 +11,8 @@ import { HeartOutlined, ShoppingCartOutlined, StarOutlined } from '@ant-design/i
 import { addWishList, fetchWishList } from '../../redux/slices/wishlistSlice';
 import { useDispatch } from 'react-redux';
 import Comments from '../../components/Comment';
-import { fetchAllComments } from '../../redux/slices/commentSlice';
+import { fetchAllComments } from '../../routes/publicRoute/commentSlice';
+import { fetchCart } from '../../redux/slices/shoppingCartSlice';
 
 const { Title, Text } = Typography;
 
@@ -24,6 +25,7 @@ export default function ProductDetail() {
     const { id } = useParams();
 
     useEffect(() => {
+        dispatch(fetchCart());
         dispatch(fetchWishList());
         // dispatch(fetchAllComments(id))
     }, [dispatch]);
@@ -47,21 +49,6 @@ export default function ProductDetail() {
         fetchProduct();
     }, [id]);
 
-    // useEffect(() => {
-    //     const fetchComments = async (id) => {
-    //         try {
-    //             const response = await axios.get(`http://localhost:8080/api/v1/user/comments/product/${id}`);
-    //             setComments(response.data);
-    //         } catch (error) {
-    //             console.error('Error fetching comments:', error);
-    //         }
-    //     };
-
-    //     fetchComments();
-    // }, [id]);
-
-
-
     const addToCart = async (id) => {
         try {
             await axios.post('http://localhost:8080/api/v1/user/cart/add', { productId: id }, {
@@ -69,6 +56,7 @@ export default function ProductDetail() {
                     Authorization: `Bearer ${Cookies.get('token')}`,
                 },
             });
+            dispatch(fetchCart());
         } catch (error) {
             console.error('Error adding to cart:', error);
         }

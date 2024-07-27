@@ -6,6 +6,7 @@ import Login from "../../pages/login";
 import Register from "../../pages/register";
 import HomeIndex from "../../pages/homePage";
 import ProductDetail from "../../pages/productDetail";
+import CheckOut from "../../pages/admin/checkout";
 
 const publicRoutes = [
   {
@@ -31,6 +32,10 @@ const publicRoutes = [
   {
     path: "/productDetail/:id",
     element: <ProductDetail />,
+  },
+  {
+    path: "/checkout",
+    element: <CheckOut />,
   },
 ];
 
