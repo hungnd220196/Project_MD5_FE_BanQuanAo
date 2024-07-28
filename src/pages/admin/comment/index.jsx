@@ -113,9 +113,9 @@ export default function CommentManagement() {
             <Dropdown overlay={renderStatusMenu(record.id)} trigger={['click']}>
               <Button type="link">Change Status</Button>
             </Dropdown>
-          )}
-          <Button type="link" onClick={() => handleDelete(record.id)}>Delete</Button>
-          <Button type="link" onClick={() => handleIgnore(record.id)}>Ignore</Button>
+        )}
+        <Button type="link" onClick={() => handleDelete(record.id)}>Delete</Button>
+        <Button type="link" onClick={() => handleIgnore(record.id)}>Ignore</Button>
         </Space>
       ),
     },

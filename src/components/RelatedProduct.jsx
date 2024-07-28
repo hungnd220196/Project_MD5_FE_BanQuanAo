@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Col, Row, Card } from 'antd';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { handleFormatMoney } from '../utils/formatData';
 
 const { Meta } = Card;
@@ -9,6 +9,7 @@ const { Meta } = Card;
 const RelatedProducts = ({ categoryId }) => {
     const [relatedProducts, setRelatedProducts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchRelatedProducts = async () => {
@@ -28,6 +29,10 @@ const RelatedProducts = ({ categoryId }) => {
         fetchRelatedProducts();
     }, [categoryId]);
 
+    const handleCardClick = (id) => {
+        navigate(`/productDetail/${id}`);
+      };
+
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -36,14 +41,13 @@ const RelatedProducts = ({ categoryId }) => {
         <Row gutter={16}>
             {relatedProducts?.map(product => (
                 <Col span={6} key={product.id}>
-                    <Link to={`/product/${product.id}`}>
-                        <Card
+                    
+                        <Card onClick={() => handleCardClick(product.id)}
                             hoverable
                             cover={<img alt={product.productName} src={product.imageUrl} style={{objectFit:"cover"}} />}
                         >
                             <Meta title={product.productName} description={`Price: ${handleFormatMoney(product.price)}`} />
                         </Card>
-                    </Link>
                 </Col>
             ))}
         </Row>
