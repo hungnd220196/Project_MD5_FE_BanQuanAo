@@ -48,6 +48,7 @@ import ShoppingCart from "../../components/ShoppingCart";
 import WishList from "../../components/WishList";
 
 export default function HeaderHomePage({ setSearchKeyword }) {
+  
   const handleSearchChange = (e) => {
     setSearchKeyword(e.target.value);
   };

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategory, changePage } from "../../../redux/slices/categorySlice"; 
-import { Table, Spin, Space, Button, message, Upload, Modal, Form, Input, Switch, Popconfirm } from "antd";
+import { Table, Spin, Space, Button, message, Upload, Modal, Form, Input, Switch } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
 import axios from "axios";
 import Cookies from "js-cookie";
@@ -47,14 +47,24 @@ export default function Category() {
       message.success('Category deleted successfully');
       dispatch(fetchAllCategory({ page: number, size }));
     } catch (error) {
-      message.error('Failed to delete category');
+      const errorMessage = error.response?.data?.message || 'Failed to delete category';
+      message.error(errorMessage);
       console.error('Delete error:', error);
     }
   };
 
+  const confirmDelete = (categoryId) => {
+    Modal.confirm({
+      title: 'Are you sure you want to delete this category?',
+      onOk: () => handleDelete(categoryId),
+      okText: 'Yes',
+      cancelText: 'No',
+    });
+  };
+
   const handleModalOk = async () => {
     try {
-      const values = form.getFieldsValue();
+      const values = await form.validateFields();
       const formData = new FormData();
       formData.append('categoryName', values.categoryName);
       formData.append('description', values.description);
@@ -75,7 +85,8 @@ export default function Category() {
       setFile(null);
       dispatch(fetchAllCategory({ page: number, size }));
     } catch (error) {
-      message.error('Failed to update category');
+      const errorMessage = error.response?.data?.message || 'Failed to update category';
+      message.error(errorMessage);
       console.error('Edit error:', error);
     }
   };
@@ -87,7 +98,7 @@ export default function Category() {
 
   const handleAddNewCategory = async () => {
     try {
-      const values = addForm.getFieldsValue();
+      const values = await addForm.validateFields();
       const formData = new FormData();
       formData.append('categoryName', values.categoryName);
       formData.append('description', values.description);
@@ -108,6 +119,8 @@ export default function Category() {
       setFile(null);
       dispatch(fetchAllCategory({ page: number, size }));
     } catch (error) {
+      const errorMessage = error.response?.data?.message || 'Failed to add category';
+      message.error(errorMessage);
       console.error('Add error:', error);
     }
   };
@@ -139,7 +152,7 @@ export default function Category() {
       title: 'Image',
       dataIndex: 'image',
       key: 'image',
-      render: (image) => (image ? <img src={image} alt="category" style={{ width: 50, height: 50 }} /> : 'No Image'),
+      render: (image) => (image ? <img src={image} alt="category" style={{ width: 60, height: 60 }} /> : 'No Image'),
     },
     {
       title: 'Status',
@@ -153,14 +166,7 @@ export default function Category() {
       render: (text, record) => (
         <Space size="middle">
           <Button type="link" onClick={() => handleEdit(record)}>Edit</Button>
-          <Popconfirm
-            title="Are you sure to delete this category?"
-            onConfirm={() => handleDelete(record.categoryId)}
-            okText="Yes"
-            cancelText="No"
-          >
-            <Button type="link" danger>Delete</Button>
-          </Popconfirm>
+          <Button type="link" danger onClick={() => confirmDelete(record.categoryId)}>Delete</Button>
         </Space>
       ),
     },
