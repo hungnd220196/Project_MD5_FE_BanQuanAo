@@ -60,6 +60,7 @@ const orderSlice = createSlice({
         state.isLoading = true;
       })
       .addCase(fetchAllOrders.fulfilled, (state, action) => {
+        console.log(action);
         state.content = action.payload.data;
         state.total = action.payload.totalElements;
         state.isLoading = false;
