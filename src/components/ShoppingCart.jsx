@@ -8,6 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { fetchCart } from '../redux/slices/shoppingCartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
+import { handleFormatMoney } from '../utils/formatData';
 
 export default function ShoppingCart({ onClose, open }) {
   const dispatch = useDispatch();
@@ -81,6 +82,14 @@ export default function ShoppingCart({ onClose, open }) {
     }
   };
 
+  const handleCheckOut = () => {
+    if (data.length === 0) {
+      message.warning("Giỏ hàng của bạn đang trống. Vui lòng thêm sản phẩm trước khi thanh toán.");
+      return;
+    }
+    navigate('/checkout');
+  };
+
   const totalPrice = data?.reduce((sum, item) => sum + item.productPrice * item.orderQuantity, 0);
 
   return (
@@ -105,7 +114,7 @@ export default function ShoppingCart({ onClose, open }) {
                   onClick={() => handleUpdateQuantity(cart.id, cart.orderQuantity + 1)}
                   className="cursor-pointer"
                 />
-                <p className="ml-auto">{cart.productPrice * cart.orderQuantity} VND</p>
+                <p className="ml-auto">{handleFormatMoney(cart.productPrice * cart.orderQuantity)}</p>
                 <DeleteOutlined
                   onClick={() => handleRemoveItem(cart.id)}
                   className="cursor-pointer text-red-500 ml-4"
@@ -123,9 +132,9 @@ export default function ShoppingCart({ onClose, open }) {
         </Button>
         <div className="flex items-center justify-between">
           <p className="font-semibold">
-            Tổng: {totalPrice} VND
+            Tổng: {handleFormatMoney(totalPrice)}
           </p>
-          <button className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg">
+          <button className="bg-orange-500 hover:bg-orange-700 text-white font-bold py-2 px-4 rounded-lg" onClick={handleCheckOut}>
             Thanh toán
           </button>
         </div>

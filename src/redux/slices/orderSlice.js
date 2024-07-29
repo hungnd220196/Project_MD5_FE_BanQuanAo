@@ -1,7 +1,35 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import { GET, POST } from '../../constants/httpMethod';
+import BASE_URL from '../../api';
+import { IDLE } from '../../constants/status';
 
+export const addOrders = createAsyncThunk(
+  'orders/addOrders',
+  async (orderData) => {
+    const response = await BASE_URL[POST](`/user/checkout`,orderData, {
+          headers: {
+            Authorization: `Bearer ${Cookies.get('token')}`,
+          },
+        });
+    return response.data;
+  }
+);
+
+export const fetchAllOrdersUser = createAsyncThunk(
+  'orders/fetchAllOrdersUser',
+  async () => {
+    const response = await BASE_URL[GET](`user/orders`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get('token')}`,
+      },
+    });
+
+    console.log("ssss",response.data);
+    return response.data;
+  }
+);
 
 export const fetchAllOrders = createAsyncThunk(
   'orders/fetchAllOrders',
@@ -42,6 +70,8 @@ const orderSlice = createSlice({
   name: 'orders',
   initialState: {
     content: [],
+    status: IDLE,
+    orders :[],
     number: 0,
     total: 0,
     size: 3,
@@ -67,6 +97,18 @@ const orderSlice = createSlice({
       .addCase(fetchAllOrders.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
+      })
+      .addCase(fetchAllOrdersUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchAllOrdersUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+       {console.log(action.payload)} ;
+        state.orders = action.payload;
+      })
+      .addCase(fetchAllOrdersUser.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
       })
       .addCase(approveOrder.pending, (state) => {
         state.isLoading = true;

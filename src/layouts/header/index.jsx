@@ -46,6 +46,8 @@ import {
 import { Header } from "antd/es/layout/layout";
 import ShoppingCart from "../../components/ShoppingCart";
 import WishList from "../../components/WishList";
+import { fetchAllOrdersUser } from "../../redux/slices/orderSlice";
+import { handleFormatMoney } from "../../utils/formatData";
 
 export default function HeaderHomePage({ setSearchKeyword }) {
   const handleSearchChange = (e) => {
@@ -79,6 +81,7 @@ export default function HeaderHomePage({ setSearchKeyword }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [changePasswordModal, setchangePasswordModal] = useState(false);
   const [addAddressModal, setAddAddressModal] = useState(false);
+  const [infoOrderModal, setInfoOrderModal] = useState(false);
   const [file, setFile] = useState(null);
   const [newdata, setNewData] = useState("");
   const [editingKey, setEditingKey] = useState("");
@@ -87,6 +90,7 @@ export default function HeaderHomePage({ setSearchKeyword }) {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
   const { addresses } = useSelector((state) => state.user);
+  const { orders } = useSelector((state) => {console.log(state);return state.orders});
   const [form] = Form.useForm();
   const [formAdd] = Form.useForm();
   const [formChangePassword] = Form.useForm();
@@ -96,6 +100,7 @@ export default function HeaderHomePage({ setSearchKeyword }) {
 
   useEffect(() => {
     dispatch(showAddress());
+    dispatch(fetchAllOrdersUser());
   }, [dispatch]);
 
   useEffect(() => {
@@ -222,6 +227,7 @@ export default function HeaderHomePage({ setSearchKeyword }) {
     setIsModalVisible(false);
     setchangePasswordModal(false);
     setAddAddressModal(false);
+    setInfoOrderModal(false)
   };
 
   const edit = (record) => {
@@ -340,6 +346,10 @@ export default function HeaderHomePage({ setSearchKeyword }) {
 
         break;
       case "3":
+          setInfoOrderModal(true);
+  
+          break;
+      case "4":
         dispatch(logout());
         Cookies.remove("token");
         navigate("/");
@@ -352,7 +362,8 @@ export default function HeaderHomePage({ setSearchKeyword }) {
   const dropDownItem = [
     { key: "1", label: "Thông tin cá nhân" },
     { key: "2", label: "Đổi mật khẩu" },
-    { key: "3", label: "Đăng xuất" },
+    { key: "3", label: "Thông tin chi tiết đơn hàng" },
+    { key: "4", label: "Đăng xuất" },
   ];
 
   const columns = [
@@ -487,11 +498,75 @@ export default function HeaderHomePage({ setSearchKeyword }) {
       ]
     : [];
 
+
+    const columnsOrders = [
+      {
+        title: 'Mã đơn hàng',
+        dataIndex: 'orderId',
+        key: 'orderId',
+      },
+      // {
+      //   title: 'Tên người dùng',
+      //   dataIndex: 'userName',
+      //   key: 'userName',
+      // },
+      {
+        title: 'Tổng giá',
+        dataIndex: 'totalPrice',
+        key: 'totalPrice',
+        render: (text) => `${handleFormatMoney(text)}`, 
+      },
+      {
+        title: 'Trạng thái',
+        dataIndex: 'status',
+        key: 'status',
+      },
+      // {
+      //   title: 'Ghi chú',
+      //   dataIndex: 'note',
+      //   key: 'note',
+      // },
+      {
+        title: 'Tên người nhận',
+        dataIndex: 'receiveName',
+        key: 'receiveName',
+      },
+      {
+        title: 'Địa chỉ nhận hàng',
+        dataIndex: 'receiveAddress',
+        key: 'receiveAddress',
+      },
+      {
+        title: 'Ngày tạo',
+        dataIndex: 'createdAt',
+        key: 'createdAt',
+        render: (text) => new Date(text).toLocaleString(),
+      },
+      {
+        title: 'Ngày nhận',
+        dataIndex: 'receivedAt',
+        key: 'receivedAt',
+        render: (text) => text ? new Date(text).toLocaleString() : 'Chưa nhận', 
+      },
+      {
+        title: 'Chi tiết',
+        key: 'action',
+        render: (text, record) => (
+          <Space size="middle">
+            <Button type="link" onClick={() => handleInfo(record)}>Chi tiết</Button>
+            <Button type="link" danger onClick={() => handleBlockUser(record.userId, record.status)}>Hủy đơn</Button>
+           
+          </Space>
+        ),
+      },
+    ];
+
   return (
     <>
       {/* Header 1 */}
 
       <Header className={`header-1 ${isHeader1Visible ? "show" : ""}`}>
+        {console.log(orders)}
         <div className="header-content">
           <div className="logo">ROUTINE</div>
           <Menu
@@ -714,6 +789,20 @@ export default function HeaderHomePage({ setSearchKeyword }) {
           </Form.Item>
         </Form>
       </Modal>
+      <Modal
+      title="Thông tin chi tiết đơn hàng"
+      visible={infoOrderModal}
+      onCancel={handleModalCancel}
+      footer={null}
+      width={1300}
+    >
+      <Table
+        columns={columnsOrders}
+        dataSource={orders.data}
+        rowKey="orderId" 
+
+      />
+    </Modal>
       <ShoppingCart onClose={onClose} open={open} />
 
       {/* Header2 */}
