@@ -1,7 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import Cookies from "js-cookie";
 import axios from "axios";
-import { GET } from "../../constants/httpMethod";
+import { DELETE, GET } from "../../constants/httpMethod";
 import BASE_URL from "../../api";
 
 
@@ -11,6 +11,18 @@ export const fetchCart = createAsyncThunk(
   "shoppingCarts/fetchCart",
   async () => {
     const response = await BASE_URL[GET](`user/cart/list`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    return response.data;
+  }
+);
+
+export const clearAllCart = createAsyncThunk(
+  "shoppingCarts/clearAllCart",
+  async () => {
+    const response = await BASE_URL[DELETE](`user/cart/clear`, {
       headers: {
         Authorization: `Bearer ${Cookies.get("token")}`,
       },

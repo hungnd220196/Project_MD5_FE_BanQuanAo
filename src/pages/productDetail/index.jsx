@@ -81,6 +81,7 @@ export default function ProductDetail() {
 
     return (
         <Layout>
+            
             <HeaderHomePage />
             <Content style={{ padding: '0 50px', marginTop: 64 }}>
                 <Row gutter={16}>
@@ -94,7 +95,9 @@ export default function ProductDetail() {
                     <Col span={14}>
                         <Title level={2}>{productDel.productName}</Title>
                         <Text strong style={{ fontSize: '24px' }}>
-                            {handleFormatMoney(productDel.price)} 
+
+                        {handleFormatMoney(productDel.price)} 
+
                             <Text delete style={{ marginLeft: '8px', color: 'gray' }}>
                                 {productDel.oldPrice} 
                             </Text>

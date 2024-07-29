@@ -3,7 +3,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 import './CarouselComponent.css';
-import { fetchAllBanners } from '../redux/slices/bannerSlice';
+import { fetchAllBanners, fetchAllBannersUser } from '../redux/slices/bannerSlice';
 import { useDispatch, useSelector } from 'react-redux';
 
 const NextArrow = (props) => {
@@ -30,11 +30,11 @@ const PrevArrow = (props) => {
 
 const YourCarouselComponent = () => {
 
-  const { banners } = useSelector((state) => {console.log("state",state); return state.banners});
+  const { banners } = useSelector((state) => state.banners);
   const dispatch = useDispatch();
 
   useEffect(() => {
-      dispatch(fetchAllBanners());
+      dispatch(fetchAllBannersUser());
   }, [dispatch]);
 
   const settings = {
@@ -48,7 +48,6 @@ const YourCarouselComponent = () => {
     nextArrow: <NextArrow />,
     prevArrow: <PrevArrow />,
   };
-  console.log(banners);
   
   return (
     <div className="carousel-container">

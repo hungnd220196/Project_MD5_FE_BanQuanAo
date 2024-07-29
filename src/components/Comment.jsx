@@ -94,7 +94,6 @@ const Comments = ({ productId }) => {
         />
       </div>
       <Divider />
-      {console.log(comments)}
       <List
         header={<div>Bình luận</div>}
         bordered

@@ -173,7 +173,7 @@ export default function User() {
   const rowClassName = (record, index) => {
     return index % 2 === 0 ? 'even-row' : 'odd-row';
   }
-console.log(addresses);
+console.log(data);
   const data = (searchText ? searchResults : user)?.map((item) => ({
     key: item.userId,
     userId: item.userId,

@@ -16,6 +16,18 @@ export const fetchAllBanners = createAsyncThunk(
   }
 );
 
+export const fetchAllBannersUser = createAsyncThunk(
+  "banners/fetchAllBannersUser",
+  async () => {
+    const response = await BASE_URL[GET](`user/banners`, {
+      headers: {
+        Authorization: `Bearer ${Cookies.get("token")}`,
+      },
+    });
+    return response.data;
+  }
+);
+
 export const addBanners = createAsyncThunk(
     "banners/addBanners",
     async (bannerData) => {
@@ -73,6 +85,17 @@ const bannerSlice = createSlice({
         state.banners = action.payload;
       })
       .addCase(fetchAllBanners.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.error.message;
+      })
+      .addCase(fetchAllBannersUser.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchAllBannersUser.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.banners = action.payload;
+      })
+      .addCase(fetchAllBannersUser.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.error.message;
       })
