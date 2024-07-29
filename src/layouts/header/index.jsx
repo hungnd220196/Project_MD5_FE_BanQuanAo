@@ -50,6 +50,7 @@ import { fetchAllOrdersUser } from "../../redux/slices/orderSlice";
 import { handleFormatMoney } from "../../utils/formatData";
 
 export default function HeaderHomePage({ setSearchKeyword }) {
+  
   const handleSearchChange = (e) => {
     setSearchKeyword(e.target.value);
   };

@@ -106,13 +106,25 @@ export default function Product() {
         message.error("Product ID is required to delete a product");
         return;
       }
-      await dispatch(deleteProduct(productId));
+      
+      await axios.delete(`http://localhost:8080/api/v1/admin/products/${productId}`, {
+        headers: {
+          Authorization: `Bearer ${Cookies.get("token")}`,
+        },
+      });
+      
       message.success("Product deleted successfully");
+      dispatch(fetchAllProducts({ page: number, size }));
     } catch (error) {
-      message.error("Failed to delete product");
+      if (error.response && error.response.status === 400) {
+        message.error("Cannot delete product due to foreign key constraints. Please remove associated records first.");
+      } else {
+        message.error("Failed to delete product");
+      }
       console.error("Delete error:", error);
     }
   };
+  
 
   const handleModalOk = async () => {
     try {

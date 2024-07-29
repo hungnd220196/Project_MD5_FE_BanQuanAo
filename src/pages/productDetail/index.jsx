@@ -40,6 +40,7 @@ export default function ProductDetail() {
                 const response = await axios.get(`http://localhost:8080/api/v1/user/products`);
                 const products = response.data.content;
                 const productDetail = products.find(item => item.id === parseInt(id));
+                
                 setProductDel(productDetail);
             } catch (error) {
                 console.error('Error fetching product:', error);
@@ -94,13 +95,17 @@ export default function ProductDetail() {
                     <Col span={14}>
                         <Title level={2}>{productDel.productName}</Title>
                         <Text strong style={{ fontSize: '24px' }}>
+
                         {handleFormatMoney(productDel.price)} 
+
                             <Text delete style={{ marginLeft: '8px', color: 'gray' }}>
                                 {productDel.oldPrice} 
                             </Text>
                             <Text type="danger" style={{ marginLeft: '8px' }}>
                                 {productDel.discount}
                             </Text>
+                        
+                            
                         </Text>
                         <Divider />
                         <Text strong>Chọn màu sắc:</Text>
@@ -127,7 +132,7 @@ export default function ProductDetail() {
                 <Divider />
                 <Title level={3}>Mô Tả Sản Phẩm</Title>
                 <Text>
-                    Áo thun tay ngắn là một trong những item cơ bản phổ biến trong thời trang thường ngày...
+                    {productDel.description}
                 </Text>
                 <Divider />
                 <Title level={3}>Sản Phẩm Liên Quan</Title>

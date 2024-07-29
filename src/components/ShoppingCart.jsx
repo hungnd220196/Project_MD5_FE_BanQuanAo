@@ -1,7 +1,5 @@
 import { DeleteOutlined, MinusSquareOutlined, PlusSquareOutlined } from '@ant-design/icons';
-
 import { Button, Divider, Drawer, message } from 'antd';
-
 import axios from 'axios';
 import Cookies from "js-cookie";
 import React, { useEffect, useState } from 'react';
@@ -12,16 +10,13 @@ import { handleFormatMoney } from '../utils/formatData';
 
 export default function ShoppingCart({ onClose, open }) {
   const dispatch = useDispatch();
-
   const navigate = useNavigate();
   const [cart, setCart] = useState([]);
-
   const { data } = useSelector((state) => state.shoppingCarts.shoppingCarts);
 
   useEffect(() => {
     dispatch(fetchCart());
   }, [dispatch]);
-
 
   useEffect(() => {
     if (data) {
@@ -47,12 +42,12 @@ export default function ShoppingCart({ onClose, open }) {
     }
   };
 
-  const handleUpdateQuantity = async (id, delta) => {
+  const handleUpdateQuantity = async (id, newQuantity) => {
+    if (newQuantity < 1) return;
     try {
       await axios.put(
         `http://localhost:8080/api/v1/user/cart/${id}`,
-        { quantity: delta },
-
+        { quantity: newQuantity },
         {
           headers: {
             Authorization: `Bearer ${Cookies.get("token")}`,
@@ -61,7 +56,6 @@ export default function ShoppingCart({ onClose, open }) {
       );
       dispatch(fetchCart());
     } catch (error) {
-
       console.error("Error updating quantity:", error);
       message.error("Có lỗi xảy ra khi cập nhật số lượng");
     }
